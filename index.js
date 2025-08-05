@@ -31,6 +31,7 @@ try {
 // Middleware
 app.use(cors({
   origin: [
+    'https://astro-snowy-five.vercel.app',
     'https://sriastroveda.com',
     'https://www.sriastroveda.com',
     'http://localhost:3000',
