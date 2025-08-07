@@ -223,7 +223,8 @@ app.post("/send-astro-email", async (req, res) => {
       birthDetails,
       language = 'English',
       additionalInfo,
-      paymentDetails
+      paymentDetails,
+      specialRequests = null // Optional field for specific questions asked by the user
     } = req.body;
 
     // Validate required fields
@@ -238,16 +239,25 @@ app.post("/send-astro-email", async (req, res) => {
 
     // Service type mapping
     const serviceMap = {
-      'horoscope': 'Horoscope Reading',
-      'birth-chart': 'Birth Chart Generation',
-      'personal-report': 'Personal Astrology Report',
+      'numerology': 'Numerology Reading',
+      'nakshatra': 'Nakshatra Reading',
+      'dasha-period': 'Dasha Period Reading',
+      'ascendant-analysis': 'Ascendant Analysis',
+      'your-life': 'Your Life Path Reading',
+      'personalized': 'Personalized Astrology Report',
+      'year-analysis': 'Year Analysis',
       'daily-horoscope': 'Daily Horoscope',
-      'kundli': 'Kundli Analysis',
-      'life-predictions': 'Life Predictions',
+      'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
       'career-guidance': 'Career Guidance',
-      'love-compatibility': 'Love Compatibility',
-      'remedial-solutions': 'Remedial Solutions',
-      'gemstone-consultation': 'Gemstone Consultation'
+      'birth-chart': 'Birth Chart Generation',
+      'horoscope': 'Horoscope Reading',
+      'nature-analysis': 'Nature Analysis',
+      'health-index': 'Health Index',
+      'lal-kitab': 'Lal Kitab Analysis',
+      'sade-sati-life': 'Sade Sati Life Analysis',
+      'gemstone-consultation': 'Gemstone Consultation',
+      'love-report': 'Love Report',
+      'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
     };
 
     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
@@ -377,6 +387,17 @@ app.post("/send-astro-email", async (req, res) => {
                           <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">${additionalInfo || 'No additional information provided by the customer.'}</p>
                       </div>
                   </div>
+
+                  ${specialRequests ? `
+                  <!-- User Questions -->
+                  <div style="background-color: #fff8e1; border-left: 6px solid #ffa000; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+                      <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Specific Questions Asked by User</h2>
+                      <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #ffcc02;">
+                          <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px; font-weight: 500; font-style: italic;">"${specialRequests}"</p>
+                          <p style="margin: 10px 0 0 0; color: #e65100; font-size: 13px; font-weight: 600;">⚠️ Please ensure these specific questions are addressed in the report</p>
+                      </div>
+                  </div>
+                  ` : ''}
 
                   <!-- Action Items -->
                   <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%); border: 2px solid #ffb74d; padding: 25px; margin-bottom: 30px; border-radius: 8px;">
@@ -623,7 +644,6 @@ app.post("/send-astro-email", async (req, res) => {
       emailsSent: {
         adminEmail: adminEmail,
         customerEmail: email,
-        ccEmails: [ccEmail]
       }
     });
 
@@ -663,16 +683,26 @@ app.post("/pending-payment-email", async (req, res) => {
     
     // Service type mapping
     const serviceMap = {
-      'horoscope': 'Horoscope Reading',
-      'birth-chart': 'Birth Chart Generation',
-      'personal-report': 'Personal Astrology Report',
+      'numerology': 'Numerology Reading',
+      'nakshatra': 'Nakshatra Reading',
+      'Dasha-period': 'Dasha Period Reading',
+      'ascendant-analysis': 'Ascendant Analysis',
+      'your-life': 'Your Life Path Reading',
+      'personalized': 'Personalized Astrology Report',
+      'year-analysis': 'Year Analysis',
       'daily-horoscope': 'Daily Horoscope',
-      'kundli': 'Kundli Analysis',
-      'life-predictions': 'Life Predictions',
+      'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
       'career-guidance': 'Career Guidance',
-      'love-compatibility': 'Love Compatibility',
-      'remedial-solutions': 'Remedial Solutions',
-      'gemstone-consultation': 'Gemstone Consultation'
+      'birth-chart': 'Birth Chart Generation',
+      'horoscope': 'Horoscope Reading',
+      'nature-analysis': 'Nature Analysis',
+      'health-index': 'Health Index',
+      'lal_kitab': 'Lal Kitab Analysis',
+      'sade-sati-life': 'Sade Sati Life Analysis',
+      'gemstone-consultation': 'Gemstone Consultation',
+      'love-report': 'Love Report',
+      'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+      'kundli': 'Kundli Analysis 200+ Pages',
     };
 
     const serviceName = serviceMap[service] || service || 'Birth Chart Generation';
@@ -1054,16 +1084,26 @@ app.post("/abandoned-payment-email", async (req, res) => {
     }
 
     const serviceMap = {
-      'horoscope': 'Horoscope Reading',
-      'birth-chart': 'Birth Chart Generation',
-      'personal-report': 'Personal Astrology Report',
+      'numerology': 'Numerology Reading',
+      'nakshatra': 'Nakshatra Reading',
+      'Dasha-period': 'Dasha Period Reading',
+      'ascendant-analysis': 'Ascendant Analysis',
+      'your-life': 'Your Life Path Reading',
+      'personalized': 'Personalized Astrology Report',
+      'year-analysis': 'Year Analysis',
       'daily-horoscope': 'Daily Horoscope',
-      'kundli': 'Kundli Analysis',
-      'life-predictions': 'Life Predictions',
+      'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
       'career-guidance': 'Career Guidance',
-      'love-compatibility': 'Love Compatibility',
-      'remedial-solutions': 'Remedial Solutions',
-      'gemstone-consultation': 'Gemstone Consultation'
+      'birth-chart': 'Birth Chart Generation',
+      'horoscope': 'Horoscope Reading',
+      'nature-analysis': 'Nature Analysis',
+      'health-index': 'Health Index',
+      'lal-kitab': 'Lal Kitab Analysis',
+      'sade-sati-life': 'Sade Sati Life Analysis',
+      'gemstone-consultation': 'Gemstone Consultation',
+      'love-report': 'Love Report',
+      'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+
     };
     
     const adminEmail = "israelitesshopping171@gmail.com";
