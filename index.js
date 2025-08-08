@@ -258,6 +258,7 @@ app.post("/send-astro-email", async (req, res) => {
       'gemstone-consultation': 'Gemstone Consultation',
       'love-report': 'Love Report',
       'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+      'kundli': 'Kundli Analysis 200+ Pages',
     };
 
     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
@@ -1103,6 +1104,7 @@ app.post("/abandoned-payment-email", async (req, res) => {
       'gemstone-consultation': 'Gemstone Consultation',
       'love-report': 'Love Report',
       'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+      'kundli': 'Kundli Analysis 200+ Pages',
 
     };
     
