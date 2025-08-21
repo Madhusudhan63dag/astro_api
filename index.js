@@ -72,10 +72,20 @@ app.use((error, req, res, next) => {
 });
 
 // Razorpay Configuration
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpay = null;
+try {
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+    } else {
+        console.warn('Razorpay keys not set: RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET missing. /create-order will return a clear error.');
+    }
+} catch (err) {
+    console.error('Failed to initialize Razorpay SDK:', err && err.message ? err.message : err);
+    razorpay = null;
+}
 
 // Nodemailer Configuration
 const transporter = nodemailer.createTransport({
@@ -140,6 +150,9 @@ app.post("/send-email", async (req, res) => {
 // Create Razorpay Order
 app.post("/create-order", async (req, res) => {
   try {
+        if (!razorpay) {
+            return res.status(500).json({ success: false, message: 'Payment gateway not configured on server' });
+        }
     const { amount, currency, receipt, notes } = req.body;
     
     const options = {
@@ -212,7 +225,6 @@ app.post("/verify-payment", async (req, res) => {
 // Email Sending Route for Astrology Services (Optimized)
 app.post("/send-astro-email", async (req, res) => {
   try {
-    console.log('Astro email request received:', JSON.stringify(req.body, null, 2));
     
     const { 
       name, 
@@ -239,26 +251,26 @@ app.post("/send-astro-email", async (req, res) => {
 
     // Service type mapping
     const serviceMap = {
-      'numerology': 'Numerology Reading',
-      'nakshatra': 'Nakshatra Reading',
-      'dasha-period': 'Dasha Period Reading',
-      'ascendant-analysis': 'Ascendant Analysis',
-      'your-life': 'Your Life Path Reading',
-      'personalized': 'Personalized Astrology Report',
-      'year-analysis': 'Year Analysis',
-      'daily-horoscope': 'Daily Horoscope',
-      'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
-      'career-guidance': 'Career Guidance',
-      'birth-chart': 'Birth Chart Generation',
-      'horoscope': 'Horoscope Reading',
-      'nature-analysis': 'Nature Analysis',
-      'health-index': 'Health Index',
-      'lal-kitab': 'Lal Kitab Analysis',
-      'sade-sati-life': 'Sade Sati Life Analysis',
-      'gemstone-consultation': 'Gemstone Consultation',
-      'love-report': 'Love Report',
-      'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-      'kundli': 'Kundli Analysis 200+ Pages',
+        'numerology': 'Numerology Reading',
+        'nakshatra': 'Nakshatra Reading',
+        'dasha-period': 'Dasha Period Reading',
+        'ascendant-analysis': 'Ascendant Analysis',
+        'your-life': 'Your Life Path Reading',
+        'personalized': 'Personalized Astrology Report',
+        'year-analysis': 'Year Analysis',
+        'daily-horoscope': 'Daily Horoscope',
+        'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
+        'career-guidance': 'Career Guidance',
+        'birth-chart': 'Birth Chart Generation',
+        'horoscope': 'Horoscope Reading',
+        'nature-analysis': 'Nature Analysis',
+        'health-index': 'Health Index',
+        'lal-kitab': 'Lal Kitab Analysis',
+        'sade-sati-life': 'Sade Sati Life Analysis',
+        'gemstone-consultation': 'Gemstone Consultation',
+        'love-report': 'Love Report',
+        'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+        'kundli': 'Kundli Analysis 200+ Pages',
     };
 
     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
@@ -636,6 +648,58 @@ app.post("/send-astro-email", async (req, res) => {
     ]);
 
     console.log(`Successfully sent emails for order ${paymentDetails?.orderId || 'N/A'}`);
+
+    // Send WhatsApp notification
+    try {
+      const recipient = phone; // Use the customer's phone number
+      const templateId = "593380087043722"; // Replace with your actual template ID
+      const headerMediaUrl = "https://sriastroveda.com/logo192.png"; // Replace with your actual logo URL
+      const bodyVariables = [
+        name,
+        serviceName,
+        paymentDetails?.amount || '599',
+        '3',
+        '500'
+      ];
+
+      const payload = {
+        to: recipient,
+        type: "template",
+        callback_data: "order_confirmation_sent",
+        template: {
+          id: templateId,
+          header_media_url: headerMediaUrl,
+          body_text_variables: bodyVariables
+        }
+      };
+
+      // Add body_text_variables if provided
+      if (bodyVariables && bodyVariables.length > 0) {
+        // If bodyVariables is an array, join with "|"
+        // If it's already a string, use as is
+        payload.template.body_text_variables = Array.isArray(bodyVariables) 
+          ? bodyVariables.join('|') 
+          : bodyVariables;
+      }
+
+      console.log('Sending WhatsApp template with payload:', JSON.stringify(payload, null, 2));
+
+      const whatsappResponse = await axios.post(
+        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`, 
+        payload,
+        {
+          headers: {
+            'x-api-key': process.env.CAMPH_API_KEY,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('WhatsApp notification sent successfully:', whatsappResponse.data);
+    } catch (whatsappError) {
+      console.error('Failed to send WhatsApp notification:', whatsappError);
+      // Don't throw error here, as emails were already sent successfully
+    }
     
     res.status(200).json({ 
       success: true, 
@@ -1874,6 +1938,7 @@ app.post("/send-match-horoscope", async (req, res) => {
 
     /* ---------- recipients ---------- */
     const adminEmail = "israelitesshopping171@gmail.com";
+    const ccEmail = "customercareproductcenter@gmail.com"; // used in response metadata and customer CC
 
     // Helper function to generate request ID
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
