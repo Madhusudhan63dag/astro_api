@@ -31,6 +31,7 @@ try {
 // Middleware
 app.use(cors({
   origin: [
+    'https://sriastroveda.com/',
     'https://sacredrelm.com',
     'https://astro-snowy-five.vercel.app',
     'https://sriastroveda.com',
@@ -647,13 +648,11 @@ app.post("/send-astro-email", async (req, res) => {
       transporter.sendMail(adminMailOptions),
       transporter.sendMail(customerMailOptions)
     ]);
-
-    console.log(`Successfully sent emails for order ${paymentDetails?.orderId || 'N/A'}`);
-
+ 
     // Send WhatsApp notification
     try {
       const recipient = phone; // Use the customer's phone number
-      const templateId = "593380087043722"; // Replace with your actual template ID
+      const templateId = "1160163365950061"; // Replace with your actual template ID
       const headerMediaUrl = "https://sriastroveda.com/logo192.png"; // Replace with your actual logo URL
       const bodyVariables = [
         name,
