@@ -102,41 +102,19 @@ const transporter = nodemailer.createTransport({
 app.post("/send-email", async (req, res) => {
   const { to, subject, message, name, email, phone, domain, productName } = req.body;
 
-  // For contact form submissions, send to main admin email
   const recipientEmail = "israelitesshopping171@gmail.com";
-  const ccEmail = "customercareproductcenter@gmail.com"; // CC for verification
-
-  // Determine the source domain/product
   const sourceIdentifier = domain || productName || 'SriAstroVeda';
   
-  // Format the email content for contact form
-  let emailContent = message;
-  if (name || email || phone) {
-    emailContent = `
-    Contact Form Submission from: ${sourceIdentifier}
-
-    Name: ${name || 'Not provided'}
-    Email: ${email || 'Not provided'}
-    Phone: ${phone || 'Not provided'}
-    Source Domain/Product: ${sourceIdentifier}
-
-    Message:
-    ${message}
-    `;
-  }
-
-  // Add domain/product info to subject if not already present
-  const emailSubject = subject && subject.includes(sourceIdentifier) 
-    ? subject 
-    : `${subject || 'Contact Form Submission'} - ${sourceIdentifier}`;
+  // Format email content
+  const emailContent = (name || email || phone) ? 
+    `Contact Form Submission from: ${sourceIdentifier}\n\nName: ${name || 'Not provided'}\nEmail: ${email || 'Not provided'}\nPhone: ${phone || 'Not provided'}\nSource: ${sourceIdentifier}\n\nMessage:\n${message}` 
+    : message;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: recipientEmail,
-    cc: ccEmail, // Add CC for verification
-    subject: emailSubject,
+    subject: `${subject || 'Contact Form Submission'} - ${sourceIdentifier}`,
     text: emailContent,
-    // Add reply-to if customer email is provided
     ...(email && { replyTo: email })
   }; 
  
@@ -152,24 +130,23 @@ app.post("/send-email", async (req, res) => {
 // Create Razorpay Order
 app.post("/create-order", async (req, res) => {
   try {
-        if (!razorpay) {
-            return res.status(500).json({ success: false, message: 'Payment gateway not configured on server' });
-        }
+    if (!razorpay) {
+      return res.status(500).json({ success: false, message: 'Payment gateway not configured' });
+    }
+    
     const { amount, currency, receipt, notes } = req.body;
     
-    const options = {
-      amount: amount * 100, // Convert to paise (Razorpay requires amount in smallest currency unit)
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
       currency: currency || "INR",
       receipt: receipt || `receipt_${Date.now()}`,
       notes: notes || {},
-    };
-    
-    const order = await razorpay.orders.create(options);
+    });
     
     res.status(200).json({
       success: true,
       order,
-      key: process.env.RAZORPAY_KEY_ID, // Send key_id to frontend for initialization
+      key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     console.error("Order creation failed:", error);
@@ -184,36 +161,20 @@ app.post("/create-order", async (req, res) => {
 // Verify Razorpay Payment
 app.post("/verify-payment", async (req, res) => {
   try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-    // Verify signature
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
       
     const isAuthentic = expectedSignature === razorpay_signature;
     
-    if (isAuthentic) {
-      // Payment verification successful
-      res.status(200).json({ 
-        success: true,
-        message: "Payment verification successful",
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id
-      });
-    } else {
-      // Payment verification failed
-      res.status(400).json({
-        success: false,
-        message: "Payment verification failed",
-      });
-    }
+    res.status(isAuthentic ? 200 : 400).json({
+      success: isAuthentic,
+      message: isAuthentic ? "Payment verification successful" : "Payment verification failed",
+      ...(isAuthentic && { orderId: razorpay_order_id, paymentId: razorpay_payment_id })
+    });
   } catch (error) {
     console.error("Payment verification error:", error);
     res.status(500).json({
@@ -223,6 +184,7 @@ app.post("/verify-payment", async (req, res) => {
     });
   }
 });
+
 
 // Email Sending Route for Astrology Services (Optimized)
 app.post("/send-astro-email", async (req, res) => {
@@ -648,58 +610,49 @@ app.post("/send-astro-email", async (req, res) => {
       transporter.sendMail(adminMailOptions),
       transporter.sendMail(customerMailOptions)
     ]);
- 
-    // Send WhatsApp notification
+
+    
     try {
-      const recipient = phone; // Use the customer's phone number
-      const templateId = "1160163365950061"; // Replace with your actual template ID
-      const headerMediaUrl = "https://sriastroveda.com/logo192.png"; // Replace with your actual logo URL
-      const bodyVariables = [
-        name,
-        serviceName,
-        paymentDetails?.amount || '599',
-        '3',
-        '500'
-      ];
-
-      const payload = {
-        to: recipient,
-        type: "template",
-        callback_data: "order_confirmation_sent",
-        template: {
-          id: templateId,
-          header_media_url: headerMediaUrl,
-          body_text_variables: bodyVariables
+        // Clean phone number
+        let recipient = phone.replace(/[\s\-\+]/g, '');
+        if (!recipient.startsWith('91')) {
+            recipient = '91' + recipient;
         }
-      };
+        
+        console.log('Sending WhatsApp to:', recipient);
+        
+        const whatsappPayload = {
+            to: recipient,
+            type: "template", 
+            callback_data: "order_confirmation_sent",
+            template: {
+            id: "1160163365950061",
+            header_media_url: "https://sacredrelm.com/static/media/logo.aade94b43e178c164667.png",
+            body_text_variables: `${name}|${paymentDetails.orderId}|${serviceName}|${paymentDetails.amount}`
+            }
+        };
 
-      // Add body_text_variables if provided
-      if (bodyVariables && bodyVariables.length > 0) {
-        // If bodyVariables is an array, join with "|"
-        // If it's already a string, use as is
-        payload.template.body_text_variables = Array.isArray(bodyVariables) 
-          ? bodyVariables.join('|') 
-          : bodyVariables;
-      }
+        const whatsappResponse = await axios.post(
+            `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
+            whatsappPayload,
+            {
+            headers: {
+                "x-api-key": process.env.CAMPH_API_KEY,
+                "Content-Type": "application/json"
+            }
+            }
+        );
 
-      console.log('Sending WhatsApp template with payload:', JSON.stringify(payload, null, 2));
+        console.log('WhatsApp sent successfully:', whatsappResponse.data);
 
-      const whatsappResponse = await axios.post(
-        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`, 
-        payload,
-        {
-          headers: {
-            'x-api-key': process.env.CAMPH_API_KEY,
-            'Content-Type': 'application/json'
-          }
+        } catch (whatsappError) {
+        console.error('WhatsApp Error Details:');
+        console.error('Status:', whatsappError.response?.status);
+        console.error('Error Data:', whatsappError.response?.data);
+        console.error('Request URL:', whatsappError.config?.url);
+        console.error('Request Payload:', whatsappError.config?.data);
         }
-      );
 
-      console.log('WhatsApp notification sent successfully:', whatsappResponse.data);
-    } catch (whatsappError) {
-      console.error('Failed to send WhatsApp notification:', whatsappError);
-      // Don't throw error here, as emails were already sent successfully
-    }
     
     res.status(200).json({ 
       success: true, 
@@ -2401,3 +2354,45 @@ app.post("/send-match-horoscope", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
+// src/
+// ├── config/
+// │   ├── database.js
+// │   ├── email.js
+// │   ├── payment.js
+// │   └── index.js
+// ├── controllers/
+// │   ├── emailController.js
+// │   ├── paymentController.js
+// │   ├── astrologyController.js
+// │   └── matchHoroscopeController.js
+// ├── middleware/
+// │   ├── cors.js
+// │   ├── errorHandler.js
+// │   ├── logging.js
+// │   └── validation.js
+// ├── routes/
+// │   ├── emailRoutes.js
+// │   ├── paymentRoutes.js
+// │   ├── astrologyRoutes.js
+// │   └── matchHoroscopeRoutes.js
+// ├── services/
+// │   ├── emailService.js
+// │   ├── paymentService.js
+// │   ├── whatsappService.js
+// │   └── templateService.js
+// ├── utils/
+// │   ├── helpers.js
+// │   ├── constants.js
+// │   └── validators.js
+// ├── templates/
+// │   ├── email/
+// │   │   ├── adminTemplates.js
+// │   │   └── customerTemplates.js
+// │   └── whatsapp/
+// │       └── templates.js
+// ├── app.js
+// └── server.js
