@@ -27,7 +27,6 @@ try {
   fetch = require("node-fetch");
 }
 
-
 // Middleware
 app.use(cors({
   origin: [
@@ -185,25 +184,557 @@ app.post("/verify-payment", async (req, res) => {
   }
 });
 
-
 // Email Sending Route for Astrology Services (Optimized)
+// app.post("/send-astro-email", async (req, res) => {
+
+//   try {
+//     console.log('Astrology Email Request:', JSON.stringify(req.body));
+//     const { 
+//       name, 
+//       email, 
+//       phone, 
+//       service, 
+//       reportType, 
+//       birthDetails,
+//       language = 'English',
+//       additionalInfo,
+//       paymentDetails,
+//       specialRequests = null // Optional field for specific questions asked by the user
+//     } = req.body;
+
+//     // Validate required fields
+//     if (!name || !email || !phone) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Name, email, and phone are required fields"
+//       });
+//     }
+
+//     const adminEmail = "israelitesshopping171@gmail.com";
+
+//     // Service type mapping
+//     const serviceMap = {
+//         'numerology': 'Numerology Reading',
+//         'nakshatra': 'Nakshatra Reading',
+//         'dasha-period': 'Dasha Period Reading',
+//         'ascendant-analysis': 'Ascendant Analysis',
+//         'your-life': 'Your Life Path Reading',
+//         'personalized': 'Personalized Astrology Report',
+//         'year-analysis': 'Year Analysis',
+//         'daily-horoscope': 'Daily Horoscope',
+//         'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
+//         'career-guidance': 'Career Guidance',
+//         'birth-chart': 'Birth Chart Generation',
+//         'horoscope': 'Horoscope Reading',
+//         'nature-analysis': 'Nature Analysis',
+//         'health-index': 'Health Index',
+//         'lal-kitab': 'Lal Kitab Analysis',
+//         'sade-sati-life': 'Sade Sati Life Analysis',
+//         'gemstone-consultation': 'Gemstone Consultation',
+//         'love-report': 'Love Report',
+//         'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+//         'kundli': 'Kundli Analysis 200+ Pages',
+//     };
+
+//     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
+
+//     // Helper function to generate request ID
+//     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
+
+//     // **ADMIN EMAIL HTML TEMPLATE**
+//     // const adminEmailHTML = `
+//     //   <!DOCTYPE html>
+//     //   <html>
+//     //   <head>
+//     //       <meta charset="utf-8">
+//     //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     //       <title>New Astrology Service Request</title>
+//     //   </head>
+//     //   <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
+//     //       <div style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              
+//     //           <!-- Header -->
+//     //           <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 40px 30px; text-align: center;">
+//     //               <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 0.5px;">
+//     //                   NEW PAID ASTROLOGY SERVICE REQUEST
+//     //               </h1>
+//     //               <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 16px; font-weight: 300;">SriAstroVeda - Premium Service Request</p>
+//     //           </div>
+
+//     //           <!-- Priority Alert -->
+//     //           <div style="background-color: #d32f2f; color: white; padding: 18px; text-align: center; font-weight: 600; font-size: 16px;">
+//     //               HIGH PRIORITY - PAID SERVICE - PROCESS WITHIN 24 HOURS
+//     //           </div>
+
+//     //           <!-- Client Details -->
+//     //           <div style="padding: 40px 30px;">
+//     //               <div style="background-color: #f5f7fa; border-left: 6px solid #1976d2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                   <h2 style="color: #1565c0; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Client Information</h2>
+//     //                   <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Full Name:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${name}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Email Address:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${email}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Phone Number:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${phone}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Service Requested:</td>
+//     //                           <td style="padding: 12px 0; color: #1976d2; font-weight: 600; border-bottom: 1px solid #e0e0e0;">${serviceName}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Preferred Language:</td>
+//     //                           <td style="padding: 12px 0; color: #424242;">${language}</td>
+//     //                       </tr>
+//     //                   </table>
+//     //               </div>
+
+//     //               ${birthDetails ? `
+//     //                     <!-- Birth Details -->
+//     //                     <div style="background-color: #faf8ff; border-left: 6px solid #7b1fa2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                         <h2 style="color: #6a1b9a; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Birth Details</h2>
+//     //                         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+//     //                             <tr>
+//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Date of Birth:</td>
+//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.dateOfBirth || 'Not provided'}</td>
+//     //                             </tr>
+//     //                             <tr>
+//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Time of Birth:</td>
+//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.timeOfBirth || 'Not provided'}</td>
+//     //                             </tr>
+//     //                             <tr>
+//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Place of Birth:</td>
+//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.placeOfBirth || 'Not provided'}</td>
+//     //                             </tr>
+//     //                             <tr>
+//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Gender:</td>
+//     //                                 <td style="padding: 12px 0; color: #424242;">${birthDetails?.gender || 'Not specified'}</td>
+//     //                             </tr>
+//     //                         </table>
+//     //                     </div>
+//     //                     ` : ''}
+
+
+//     //               ${reportType ? `
+//     //               <!-- Report Type -->
+//     //               <div style="background-color: #fff8f0; border-left: 6px solid #f57c00; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                   <h2 style="color: #ef6c00; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Report Specification</h2>
+//     //                   <p style="margin: 15px 0 0 0; color: #424242; font-size: 16px; font-weight: 500;">${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Horoscope</p>
+//     //               </div>
+//     //               ` : ''}
+
+//     //               ${paymentDetails ? `
+//     //               <!-- Payment Information -->
+//     //               <div style="background-color: #f1f8e9; border-left: 6px solid #388e3c; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                   <h2 style="color: #2e7d32; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Payment Verification</h2>
+//     //                   <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Payment Status:</td>
+//     //                           <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">${paymentDetails.status || 'COMPLETED'}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Amount Received:</td>
+//     //                           <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; font-size: 20px; border-bottom: 1px solid #e0e0e0;">₹${paymentDetails.amount || 'N/A'}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Payment Reference:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.paymentId || 'N/A'}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Order Reference:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.orderId || 'N/A'}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Payment Gateway:</td>
+//     //                           <td style="padding: 12px 0; color: #424242; font-weight: 500;">Razorpay Integration</td>
+//     //                       </tr>
+//     //                   </table>
+//     //               </div>
+//     //               ` : ''}
+
+//     //               <!-- Additional Information -->
+//     //               <div style="background-color: #fafafa; border-left: 6px solid #607d8b; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                   <h2 style="color: #455a64; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Additional Information</h2>
+//     //                   <div style="background: white; padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #e0e0e0;">
+//     //                       <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">${additionalInfo || 'No additional information provided by the customer.'}</p>
+//     //                   </div>
+//     //               </div>
+
+//     //               ${specialRequests ? `
+//     //               <!-- User Questions -->
+//     //               <div style="background-color: #fff8e1; border-left: 6px solid #ffa000; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//     //                   <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Specific Questions Asked by User</h2>
+//     //                   <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #ffcc02;">
+//     //                       <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px; font-weight: 500; font-style: italic;">"${specialRequests}"</p>
+//     //                       <p style="margin: 10px 0 0 0; color: #e65100; font-size: 13px; font-weight: 600;">⚠️ Please ensure these specific questions are addressed in the report</p>
+//     //                   </div>
+//     //               </div>
+//     //               ` : ''}
+
+//     //               <!-- Action Items -->
+//     //               <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%); border: 2px solid #ffb74d; padding: 25px; margin-bottom: 30px; border-radius: 8px;">
+//     //                   <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Required Actions</h2>
+//     //                   <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px; margin-top: 15px;">
+//     //                       <ol style="color: #424242; line-height: 2; margin: 0; font-size: 15px;">
+//     //                           <li><strong>Verify all payment details listed above</strong></li>
+//     //                           <li><strong>Begin preparation of ${serviceName} for the customer</strong></li>
+//     //                           <li><strong>Complete and deliver the report within 24-48 hours</strong></li>
+//     //                           <li><strong>Send confirmation email once processing begins</strong></li>
+//     //                           <li><strong>Ensure quality review before final delivery</strong></li>
+//     //                       </ol>
+//     //                   </div>
+//     //               </div>
+
+//     //               <!-- Request Metadata -->
+//     //               <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+//     //                   <h3 style="color: #37474f; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Request Metadata</h3>
+//     //                   <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+//     //                       <tr>
+//     //                           <td style="padding: 8px 0; color: #616161; width: 140px;">Received Time:</td>
+//     //                           <td style="padding: 8px 0; color: #37474f; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 8px 0; color: #616161;">Platform Source:</td>
+//     //                           <td style="padding: 8px 0; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 8px 0; color: #616161;">Customer Contact:</td>
+//     //                           <td style="padding: 8px 0; color: #1976d2; font-weight: 500;">${email}</td>
+//     //                       </tr>
+//     //                       <tr>
+//     //                           <td style="padding: 8px 0; color: #616161;">Service Priority:</td>
+//     //                           <td style="padding: 8px 0; color: #d32f2f; font-weight: 600;">HIGH (PAID SERVICE)</td>
+//     //                       </tr>
+//     //                   </table>
+//     //               </div>
+//     //           </div>
+
+//     //           <!-- Footer -->
+//     //           <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 30px; text-align: center;">
+//     //               <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600;">SriAstroVeda</h3>
+//     //               <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">Premium Astrology Services</p>
+//     //               <p style="margin: 0; font-size: 12px; opacity: 0.7;">Automated Service Request Notification System</p>
+//     //           </div>
+//     //       </div>
+//     //   </body>
+//     //   </html>
+//     // `;
+//     const adminEmailHTML = `
+//         <!DOCTYPE html>
+//         <html>
+//         <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paid Astrology Service</title></head>
+//         <body style="margin:0;padding:16px;font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;white-space:pre-wrap;">
+//         Astrology Service Request (Paid)
+
+//         Name: ${name}
+//         Email: ${email}
+//         Phone: ${phone}
+
+//         Service: ${service || 'N/A'}
+//         Report Type: ${reportType || 'N/A'}
+//         Language: ${language || 'N/A'}
+
+//         ${birthDetails ? `Birth Details:
+//         Date of Birth: ${birthDetails?.dob || 'N/A'}
+//         Time of Birth: ${birthDetails?.time || 'N/A'}
+//         Place of Birth: ${birthDetails?.place || 'N/A'}
+//         Gender: ${birthDetails?.gender || 'N/A'}` : ''}
+
+//         ${paymentDetails ? `Payment:
+//         Status: ${paymentDetails?.status || 'N/A'}
+//         Amount: ${paymentDetails?.amount || 'N/A'}
+//         Payment ID: ${paymentDetails?.paymentId || 'N/A'}
+//         Order ID: ${paymentDetails?.orderId || 'N/A'}` : ''}
+
+//         ${additionalInfo ? `Additional Info:
+//         ${additionalInfo}` : ''}
+
+//         ${specialRequests ? `Special Requests:
+//         ${specialRequests}` : ''}
+
+//         Received: ${new Date().toISOString()}
+//         </body>
+//         </html>
+//     `;
+
+
+//     // **CUSTOMER EMAIL HTML TEMPLATE**
+//     const customerEmailHTML = `
+//       <!DOCTYPE html>
+//       <html>
+//       <head>
+//           <meta charset="utf-8">
+//           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//           <title>Order Confirmation - SriAstroVeda</title>
+//       </head>
+//       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
+//           <div style="max-width: 700px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              
+//               <!-- Header -->
+//               <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 50px 30px; text-align: center;">
+//                   <h1 style="color: white; margin: 0; font-size: 36px; font-weight: 300; letter-spacing: 2px;">
+//                       SriAstroVeda
+//                   </h1>
+//                   <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 18px; font-weight: 300; letter-spacing: 0.5px;">Premium Astrology Services</p>
+//               </div>
+
+//               <!-- Success Banner -->
+//               <div style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%); color: white; padding: 25px; text-align: center;">
+//                   <h2 style="margin: 0; font-size: 24px; font-weight: 500;">Order Confirmation Successful</h2>
+//                   <p style="margin: 12px 0 0 0; font-size: 16px; opacity: 0.95;">Your premium astrology service has been confirmed</p>
+//               </div>
+
+//               <!-- Main Content -->
+//               <div style="padding: 40px 30px;">
+                  
+//                   <!-- Personal Greeting -->
+//                   <div style="margin-bottom: 35px;">
+//                       <h2 style="color: #1a237e; font-size: 26px; margin: 0 0 20px 0; font-weight: 400;">Dear ${name},</h2>
+//                       <p style="color: #424242; font-size: 16px; line-height: 1.7; margin: 0;">
+//                           Thank you for choosing SriAstroVeda for your astrological consultation. We have successfully received your order 
+//                           and confirmed your payment. Our expert astrologers are now prepared to provide you with detailed, personalized insights.
+//                       </p>
+//                   </div>
+
+//                   <!-- Order Summary -->
+//                   <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f3e5f5 100%); border: 2px solid #e1bee7; border-radius: 12px; padding: 30px; margin-bottom: 35px;">
+//                       <h3 style="color: #4a148c; margin: 0 0 25px 0; font-size: 22px; font-weight: 500; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
+//                           Order Summary
+//                       </h3>
+//                       <table style="width: 100%; border-collapse: collapse;">
+//                           <tr style="border-bottom: 2px solid #e1bee7;">
+//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f; width: 150px;">Service Type:</td>
+//                               <td style="padding: 15px 0; color: #4a148c; font-weight: 600; font-size: 18px;">${serviceName}</td>
+//                           </tr>
+//                           <tr style="border-bottom: 1px solid #e1bee7;">
+//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Investment:</td>
+//                               <td style="padding: 15px 0; color: #2e7d32; font-weight: 700; font-size: 22px;">₹${paymentDetails?.amount || '599'}</td>
+//                           </tr>
+//                           <tr style="border-bottom: 1px solid #e1bee7;">
+//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Reference:</td>
+//                               <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; background: rgba(255,255,255,0.8); padding: 8px 15px; border-radius: 4px; font-weight: 600;">${paymentDetails?.orderId || 'N/A'}</td>
+//                           </tr>
+//                           <tr style="border-bottom: 1px solid #e1bee7;">
+//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Payment Reference:</td>
+//                               <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px;">${paymentDetails?.paymentId || 'N/A'}</td>
+//                           </tr>
+//                           <tr>
+//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Timestamp:</td>
+//                               <td style="padding: 15px 0; color: #424242; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+//                           </tr>
+//                       </table>
+//                   </div>
+
+//                   <!-- Service Timeline -->
+//                   <div style="background-color: #fff3e0; border-left: 6px solid #ff9800; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//                       <h3 style="color: #e65100; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Service Timeline</h3>
+//                       <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
+//                           <p style="color: #424242; margin: 0; line-height: 1.7; font-size: 16px;">
+//                               Your comprehensive astrology report will be meticulously prepared by our certified astrologers 
+//                               and delivered directly to your email address within <strong style="color: #e65100;">24-48 hours</strong> 
+//                               of this confirmation.
+//                           </p>
+//                       </div>
+//                   </div>
+
+//                   <!-- Process Overview -->
+//                   <div style="background-color: #f1f8e9; border-left: 6px solid #4caf50; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+//                       <h3 style="color: #2e7d32; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">What Happens Next</h3>
+//                       <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
+//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+//                               <p style="margin: 0; color: #424242; font-weight: 500;">Expert Analysis Phase</p>
+//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Our certified astrologers will analyze your specific requirements</p>
+//                           </div>
+//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+//                               <p style="margin: 0; color: #424242; font-weight: 500;">Report Preparation</p>
+//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Detailed, personalized insights will be compiled into your report</p>
+//                           </div>
+//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+//                               <p style="margin: 0; color: #424242; font-weight: 500;">Quality Review</p>
+//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Final review and quality assurance before delivery</p>
+//                           </div>
+//                           <div style="padding-left: 20px; border-left: 3px solid #4caf50;">
+//                               <p style="margin: 0; color: #424242; font-weight: 500;">Report Delivery</p>
+//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Complete report delivered via email with follow-up support</p>
+//                           </div>
+//                       </div>
+//                   </div>
+
+//                   <!-- Support Section -->
+//                   <div style="background-color: #f5f5f5; border-radius: 10px; padding: 25px; margin-bottom: 30px; border: 1px solid #e0e0e0;">
+//                       <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Customer Support</h3>
+//                       <p style="color: #424242; margin: 0 0 15px 0; line-height: 1.6;">
+//                           Should you have any questions or require assistance, our dedicated support team is available to help:
+//                       </p>
+//                       <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #1976d2;">
+//                           <table style="width: 100%; border-collapse: collapse;">
+//                               <tr>
+//                                   <td style="padding: 8px 0; color: #37474f; font-weight: 600; width: 120px;">Email Support:</td>
+//                                   <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">israelitesshopping171@gmail.com</td>
+//                               </tr>
+//                               <tr>
+//                                   <td style="padding: 8px 0; color: #37474f; font-weight: 600;">Response Time:</td>
+//                                   <td style="padding: 8px 0; color: #424242;">Within 4-6 hours during business hours</td>
+//                               </tr>
+//                           </table>
+//                           <p style="margin: 15px 0 0 0; color: #616161; font-size: 14px;">
+//                               You may also reply directly to this email for any inquiries.
+//                           </p>
+//                       </div>
+//                   </div>
+
+//                   <!-- Important Notice -->
+//                   <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border: 2px solid #ffb74d; border-radius: 8px; padding: 20px; margin-bottom: 35px;">
+//                       <h4 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Important Information</h4>
+//                       <ul style="color: #424242; margin: 0; padding-left: 20px; line-height: 1.8;">
+//                           <li>Please save this email as confirmation of your order</li>
+//                           <li>Your order reference number is: <strong style="color: #e65100;">${paymentDetails?.orderId || 'N/A'}</strong></li>
+//                           <li>All reports are prepared by certified, experienced astrologers</li>
+//                           <li>Reports are delivered in PDF format for easy access and printing</li>
+//                       </ul>
+//                   </div>
+
+//                   <!-- Appreciation Message -->
+//                   <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); border-radius: 10px; color: white; margin-bottom: 20px;">
+//                       <h3 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 400;">Thank You for Your Trust</h3>
+//                       <p style="margin: 0; font-size: 16px; opacity: 0.95; line-height: 1.6;">
+//                           We appreciate your confidence in SriAstroVeda for your astrological guidance. 
+//                           Our commitment is to provide you with accurate, insightful, and meaningful astrological consultation.
+//                       </p>
+//                   </div>
+//               </div>
+
+//               <!-- Footer -->
+//               <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 35px; text-align: center;">
+//                   <h3 style="color: #fff; margin: 0 0 15px 0; font-size: 22px; font-weight: 300; letter-spacing: 1px;">SriAstroVeda</h3>
+//                   <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Premium Astrology Services</p>
+//                   <p style="margin: 0; font-size: 13px; opacity: 0.7;">
+//                       Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: israelitesshopping171@gmail.com
+//                   </p>
+//               </div>
+//           </div>
+//       </body>
+//       </html>`;
+
+    
+    
+    
+//     //   const adminSubject = `PAID ${serviceName} Request - ${name} - ₹${paymentDetails?.amount || '599'} - SriAstroVeda`;
+//     const adminSubject = `PAID ${service || 'N/A'} - ${name} | ₹${paymentDetails?.amount || 'N/A'} | Order: ${paymentDetails?.orderId || 'N/A'}`;
+
+//     const customerSubject = `Order Confirmation - ${serviceName} - SriAstroVeda (${paymentDetails?.orderId || 'N/A'})`;
+
+//     // **Send Email 1: To Admin with CC**
+//     const adminMailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: adminEmail,
+//       subject: adminSubject,
+//       html: adminEmailHTML,
+//       replyTo: email
+//     };
+
+//     // **Send Email 2: To Customer with Admin CC**
+//     const customerMailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       cc: adminEmail,
+//       subject: customerSubject,
+//       html: customerEmailHTML
+//     };
+
+//     // **Send both emails concurrently**
+//     await Promise.all([
+//       transporter.sendMail(adminMailOptions),
+//       transporter.sendMail(customerMailOptions)
+//     ]);
+
+    
+//     try {
+//         // Clean phone number
+//         let recipient = phone.replace(/[\s\-\+]/g, '');
+//         if (!recipient.startsWith('91')) {
+//             recipient = '91' + recipient;
+//         }
+        
+//         console.log('Sending WhatsApp to:', recipient);
+        
+//         const whatsappPayload = {
+//             to: recipient,
+//             type: "template", 
+//             callback_data: "order_confirmation_sent",
+//             template: {
+//             id: "3674810169487090",
+//             // header_media_url: "https://sacredrelm.com/static/media/logo.aade94b43e178c164667.png",
+//             body_text_variables: `${name}|${paymentDetails.orderId}|${serviceName}|${paymentDetails.amount}`
+//             }
+//         };
+
+//         const whatsappResponse = await axios.post(
+//             `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
+//             whatsappPayload,
+//             {
+//             headers: {
+//                 "x-api-key": process.env.CAMPH_API_KEY,
+//                 "Content-Type": "application/json"
+//             }
+//             }
+//         );
+
+//         console.log('WhatsApp sent successfully:', whatsappResponse.data);
+
+//         } catch (whatsappError) {
+//         console.error('WhatsApp Error Details:');
+//         console.error('Status:', whatsappError.response?.status);
+//         console.error('Error Data:', whatsappError.response?.data);
+//         console.error('Request URL:', whatsappError.config?.url);
+//         console.error('Request Payload:', whatsappError.config?.data);
+//         }
+
+    
+//     res.status(200).json({ 
+//       success: true, 
+//       message: "Astrology service request submitted successfully!",
+//       serviceType: serviceName,
+//       requestId: paymentDetails?.orderId || generateRequestId(),
+//       emailsSent: {
+//         adminEmail: adminEmail,
+//         customerEmail: email,
+//       }
+//     });
+
+//   } catch (error) {
+//     console.error("Error processing astro email request:", error);
+//     res.status(500).json({ 
+//       success: false, 
+//       message: "Failed to process astrology service request!", 
+//       error: error.message 
+//     });
+//   }
+// });
+
 app.post("/send-astro-email", async (req, res) => {
   try {
-    
-    const { 
-      name, 
-      email, 
-      phone, 
-      service, 
-      reportType, 
-      birthDetails,
-      language = 'English',
+    console.log("Astrology Email Request:", JSON.stringify(req.body));
+
+    const {
+      name,
+      email,
+      phone,
+      service,       // raw from frontend
+      reportType,    // raw from frontend
+      birthDetails,  // { dateOfBirth, timeOfBirth, placeOfBirth, gender }
+      language = "English",
       additionalInfo,
-      paymentDetails,
-      specialRequests = null // Optional field for specific questions asked by the user
+      paymentDetails, // { status, amount, paymentId, orderId }
+      specialRequests = null
     } = req.body;
 
-    // Validate required fields
+    // Basic required fields validation
     if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
@@ -211,383 +742,268 @@ app.post("/send-astro-email", async (req, res) => {
       });
     }
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    // OPTIONAL: Enforce birth data as mandatory (uncomment if required)
+    // if (!birthDetails?.dateOfBirth || !birthDetails?.timeOfBirth || !birthDetails?.placeOfBirth) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "DOB, TOB, and Place of Birth are required"
+    //   });
+    // }
 
-    // Service type mapping
+    const adminEmail = "israelitesshopping171@gmail.com";
+    // Friendly label mapping (extend as needed)
     const serviceMap = {
-        'numerology': 'Numerology Reading',
-        'nakshatra': 'Nakshatra Reading',
-        'dasha-period': 'Dasha Period Reading',
-        'ascendant-analysis': 'Ascendant Analysis',
-        'your-life': 'Your Life Path Reading',
-        'personalized': 'Personalized Astrology Report',
-        'year-analysis': 'Year Analysis',
-        'daily-horoscope': 'Daily Horoscope',
-        'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
-        'career-guidance': 'Career Guidance',
-        'birth-chart': 'Birth Chart Generation',
-        'horoscope': 'Horoscope Reading',
-        'nature-analysis': 'Nature Analysis',
-        'health-index': 'Health Index',
-        'lal-kitab': 'Lal Kitab Analysis',
-        'sade-sati-life': 'Sade Sati Life Analysis',
-        'gemstone-consultation': 'Gemstone Consultation',
-        'love-report': 'Love Report',
-        'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-        'kundli': 'Kundli Analysis 200+ Pages',
+    'numerology': 'Numerology Reading',
+    'nakshatra': 'Nakshatra Reading',
+    'dasha-period': 'Dasha Period Reading',
+    'ascendant-analysis': 'Ascendant Analysis',
+    'your-life': 'Your Life Path Reading',
+    'personalized': 'Personalized Astrology Report',
+    'year-analysis': 'Year Analysis',
+    'daily-horoscope': 'Daily Horoscope',
+    'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
+    'career-guidance': 'Career Guidance',
+    'birth-chart': 'Birth Chart Generation',
+    'horoscope': 'Horoscope Reading',
+    'nature-analysis': 'Nature Analysis',
+    'health-index': 'Health Index',
+    'lal-kitab': 'Lal Kitab Analysis',
+    'sade-sati-life': 'Sade Sati Life Analysis',
+    'gemstone-consultation': 'Gemstone Consultation',
+    'love-report': 'Love Report',
+    'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+    'kundli': 'Kundli Analysis 200+ Pages',
     };
 
-    const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
+    // Compute friendly name or fall back to raw service string
+    const serviceName = serviceMap?.[service] || service || 'Astrology Service';
 
-    // Helper function to generate request ID
+    console.log('service/raw:', service, 'serviceName/mapped:', serviceName);
+    // Helper for requestId fallback
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
 
-    // **ADMIN EMAIL HTML TEMPLATE**
+    // Presence log (debug)
+    console.log("send-astro-email presence", {
+      name: !!name, email: !!email, phone: !!phone,
+      service: !!service, reportType: !!reportType, language: !!language,
+      birthDetails: birthDetails && {
+        dob: !!birthDetails?.dateOfBirth,
+        tob: !!birthDetails?.timeOfBirth,
+        pob: !!birthDetails?.placeOfBirth,
+        gender: !!birthDetails?.gender
+      },
+      paymentDetails: paymentDetails && {
+        orderId: !!paymentDetails?.orderId,
+        amount: !!paymentDetails?.amount,
+        paymentId: !!paymentDetails?.paymentId,
+        status: !!paymentDetails?.status
+      }
+    });
+
+    // SUBJECTS (admin uses raw service/reportType only from frontend)
+    const adminSubject = `PAID ${service || "N/A"} - ${name} | ₹${paymentDetails?.amount || "N/A"} | Order: ${paymentDetails?.orderId || "N/A"}`;
+    const customerSubject = `Order Confirmation - ${service || "Astrology Service"} - SriAstroVeda (${paymentDetails?.orderId || "N/A"})`;
+
+    // MINIMAL ADMIN EMAIL (plain text style, only raw frontend fields)
     const adminEmailHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>New Astrology Service Request</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
-          <div style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-              
-              <!-- Header -->
-              <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 40px 30px; text-align: center;">
-                  <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 0.5px;">
-                      NEW PAID ASTROLOGY SERVICE REQUEST
-                  </h1>
-                  <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 16px; font-weight: 300;">SriAstroVeda - Premium Service Request</p>
-              </div>
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paid Astrology Service</title></head>
+        <body style="margin:0;padding:16px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;white-space:pre-wrap;">
+        Astrology Service Request (Paid)
 
-              <!-- Priority Alert -->
-              <div style="background-color: #d32f2f; color: white; padding: 18px; text-align: center; font-weight: 600; font-size: 16px;">
-                  HIGH PRIORITY - PAID SERVICE - PROCESS WITHIN 24 HOURS
-              </div>
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone}
 
-              <!-- Client Details -->
-              <div style="padding: 40px 30px;">
-                  <div style="background-color: #f5f7fa; border-left: 6px solid #1976d2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #1565c0; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Client Information</h2>
-                      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Full Name:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${name}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Email Address:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${email}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Phone Number:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${phone}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Service Requested:</td>
-                              <td style="padding: 12px 0; color: #1976d2; font-weight: 600; border-bottom: 1px solid #e0e0e0;">${serviceName}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Preferred Language:</td>
-                              <td style="padding: 12px 0; color: #424242;">${language}</td>
-                          </tr>
-                      </table>
-                  </div>
+        Service: ${service || "N/A"}
+        Report Type: ${reportType || "N/A"}
+        Language: ${language || "N/A"}
 
-                  ${service === 'birth-chart' && birthDetails ? `
-                  <!-- Birth Details -->
-                  <div style="background-color: #faf8ff; border-left: 6px solid #7b1fa2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #6a1b9a; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Birth Details</h2>
-                      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Date of Birth:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails.dateOfBirth || 'Not provided'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Time of Birth:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails.timeOfBirth || 'Not provided'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Place of Birth:</td>
-                              <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails.placeOfBirth || 'Not provided'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Gender:</td>
-                              <td style="padding: 12px 0; color: #424242;">${birthDetails.gender || 'Not specified'}</td>
-                          </tr>
-                      </table>
-                  </div>
-                  ` : ''}
+        ${birthDetails ? `Birth Details:
+        Date of Birth: ${birthDetails?.dateOfBirth || "N/A"}
+        Time of Birth: ${birthDetails?.timeOfBirth || "N/A"}
+        Place of Birth: ${birthDetails?.placeOfBirth || "N/A"}
+        Gender: ${birthDetails?.gender || "N/A"}` : "Birth Details: N/A"}
 
-                  ${reportType ? `
-                  <!-- Report Type -->
-                  <div style="background-color: #fff8f0; border-left: 6px solid #f57c00; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #ef6c00; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Report Specification</h2>
-                      <p style="margin: 15px 0 0 0; color: #424242; font-size: 16px; font-weight: 500;">${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Horoscope</p>
-                  </div>
-                  ` : ''}
+        ${paymentDetails ? `Payment:
+        Status: ${paymentDetails?.status || "N/A"}
+        Amount: ${paymentDetails?.amount || "N/A"}
+        Payment ID: ${paymentDetails?.paymentId || "N/A"}
+        Order ID: ${paymentDetails?.orderId || "N/A"}` : "Payment: N/A"}
 
-                  ${paymentDetails ? `
-                  <!-- Payment Information -->
-                  <div style="background-color: #f1f8e9; border-left: 6px solid #388e3c; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #2e7d32; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Payment Verification</h2>
-                      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Payment Status:</td>
-                              <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">${paymentDetails.status || 'COMPLETED'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Amount Received:</td>
-                              <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; font-size: 20px; border-bottom: 1px solid #e0e0e0;">₹${paymentDetails.amount || 'N/A'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Payment Reference:</td>
-                              <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.paymentId || 'N/A'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Order Reference:</td>
-                              <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.orderId || 'N/A'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Payment Gateway:</td>
-                              <td style="padding: 12px 0; color: #424242; font-weight: 500;">Razorpay Integration</td>
-                          </tr>
-                      </table>
-                  </div>
-                  ` : ''}
+        ${additionalInfo ? `Additional Info:
+        ${additionalInfo}` : ""}
 
-                  <!-- Additional Information -->
-                  <div style="background-color: #fafafa; border-left: 6px solid #607d8b; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #455a64; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Additional Information</h2>
-                      <div style="background: white; padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #e0e0e0;">
-                          <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">${additionalInfo || 'No additional information provided by the customer.'}</p>
-                      </div>
-                  </div>
+        ${specialRequests ? `Special Requests:
+        ${specialRequests}` : ""}
 
-                  ${specialRequests ? `
-                  <!-- User Questions -->
-                  <div style="background-color: #fff8e1; border-left: 6px solid #ffa000; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Specific Questions Asked by User</h2>
-                      <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #ffcc02;">
-                          <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px; font-weight: 500; font-style: italic;">"${specialRequests}"</p>
-                          <p style="margin: 10px 0 0 0; color: #e65100; font-size: 13px; font-weight: 600;">⚠️ Please ensure these specific questions are addressed in the report</p>
-                      </div>
-                  </div>
-                  ` : ''}
+        Received: ${new Date().toISOString()}
+        </body>
+        </html>
+    `.trim();
 
-                  <!-- Action Items -->
-                  <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%); border: 2px solid #ffb74d; padding: 25px; margin-bottom: 30px; border-radius: 8px;">
-                      <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Required Actions</h2>
-                      <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px; margin-top: 15px;">
-                          <ol style="color: #424242; line-height: 2; margin: 0; font-size: 15px;">
-                              <li><strong>Verify all payment details listed above</strong></li>
-                              <li><strong>Begin preparation of ${serviceName} for the customer</strong></li>
-                              <li><strong>Complete and deliver the report within 24-48 hours</strong></li>
-                              <li><strong>Send confirmation email once processing begins</strong></li>
-                              <li><strong>Ensure quality review before final delivery</strong></li>
-                          </ol>
-                      </div>
-                  </div>
-
-                  <!-- Request Metadata -->
-                  <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
-                      <h3 style="color: #37474f; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Request Metadata</h3>
-                      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                          <tr>
-                              <td style="padding: 8px 0; color: #616161; width: 140px;">Received Time:</td>
-                              <td style="padding: 8px 0; color: #37474f; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 8px 0; color: #616161;">Platform Source:</td>
-                              <td style="padding: 8px 0; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 8px 0; color: #616161;">Customer Contact:</td>
-                              <td style="padding: 8px 0; color: #1976d2; font-weight: 500;">${email}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 8px 0; color: #616161;">Service Priority:</td>
-                              <td style="padding: 8px 0; color: #d32f2f; font-weight: 600;">HIGH (PAID SERVICE)</td>
-                          </tr>
-                      </table>
-                  </div>
-              </div>
-
-              <!-- Footer -->
-              <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 30px; text-align: center;">
-                  <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600;">SriAstroVeda</h3>
-                  <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">Premium Astrology Services</p>
-                  <p style="margin: 0; font-size: 12px; opacity: 0.7;">Automated Service Request Notification System</p>
-              </div>
-          </div>
-      </body>
-      </html>`;
-
-    // **CUSTOMER EMAIL HTML TEMPLATE**
+    // CUSTOMER EMAIL (keep as-is or simplify; below is a compact confirmation)
     const customerEmailHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Order Confirmation - SriAstroVeda</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
-          <div style="max-width: 700px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-              
-              <!-- Header -->
-              <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 50px 30px; text-align: center;">
-                  <h1 style="color: white; margin: 0; font-size: 36px; font-weight: 300; letter-spacing: 2px;">
-                      SriAstroVeda
-                  </h1>
-                  <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 18px; font-weight: 300; letter-spacing: 0.5px;">Premium Astrology Services</p>
-              </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Confirmation - SriAstroVeda</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
+            <div style="max-width: 700px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 50px 30px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 36px; font-weight: 300; letter-spacing: 2px;">
+                        SriAstroVeda
+                    </h1>
+                    <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 18px; font-weight: 300; letter-spacing: 0.5px;">Premium Astrology Services</p>
+                </div>
 
-              <!-- Success Banner -->
-              <div style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%); color: white; padding: 25px; text-align: center;">
-                  <h2 style="margin: 0; font-size: 24px; font-weight: 500;">Order Confirmation Successful</h2>
-                  <p style="margin: 12px 0 0 0; font-size: 16px; opacity: 0.95;">Your premium astrology service has been confirmed</p>
-              </div>
+                <!-- Success Banner -->
+                <div style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%); color: white; padding: 25px; text-align: center;">
+                    <h2 style="margin: 0; font-size: 24px; font-weight: 500;">Order Confirmation Successful</h2>
+                    <p style="margin: 12px 0 0 0; font-size: 16px; opacity: 0.95;">Your premium astrology service has been confirmed</p>
+                </div>
 
-              <!-- Main Content -->
-              <div style="padding: 40px 30px;">
-                  
-                  <!-- Personal Greeting -->
-                  <div style="margin-bottom: 35px;">
-                      <h2 style="color: #1a237e; font-size: 26px; margin: 0 0 20px 0; font-weight: 400;">Dear ${name},</h2>
-                      <p style="color: #424242; font-size: 16px; line-height: 1.7; margin: 0;">
-                          Thank you for choosing SriAstroVeda for your astrological consultation. We have successfully received your order 
-                          and confirmed your payment. Our expert astrologers are now prepared to provide you with detailed, personalized insights.
-                      </p>
-                  </div>
+                <!-- Main Content -->
+                <div style="padding: 40px 30px;">
+                    
+                    <!-- Personal Greeting -->
+                    <div style="margin-bottom: 35px;">
+                        <h2 style="color: #1a237e; font-size: 26px; margin: 0 0 20px 0; font-weight: 400;">Dear ${name},</h2>
+                        <p style="color: #424242; font-size: 16px; line-height: 1.7; margin: 0;">
+                            Thank you for choosing SriAstroVeda for your astrological consultation. We have successfully received your order 
+                            and confirmed your payment. Our expert astrologers are now prepared to provide you with detailed, personalized insights.
+                        </p>
+                    </div>
 
-                  <!-- Order Summary -->
-                  <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f3e5f5 100%); border: 2px solid #e1bee7; border-radius: 12px; padding: 30px; margin-bottom: 35px;">
-                      <h3 style="color: #4a148c; margin: 0 0 25px 0; font-size: 22px; font-weight: 500; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
-                          Order Summary
-                      </h3>
-                      <table style="width: 100%; border-collapse: collapse;">
-                          <tr style="border-bottom: 2px solid #e1bee7;">
-                              <td style="padding: 15px 0; font-weight: 600; color: #37474f; width: 150px;">Service Type:</td>
-                              <td style="padding: 15px 0; color: #4a148c; font-weight: 600; font-size: 18px;">${serviceName}</td>
-                          </tr>
-                          <tr style="border-bottom: 1px solid #e1bee7;">
-                              <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Investment:</td>
-                              <td style="padding: 15px 0; color: #2e7d32; font-weight: 700; font-size: 22px;">₹${paymentDetails?.amount || '599'}</td>
-                          </tr>
-                          <tr style="border-bottom: 1px solid #e1bee7;">
-                              <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Reference:</td>
-                              <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; background: rgba(255,255,255,0.8); padding: 8px 15px; border-radius: 4px; font-weight: 600;">${paymentDetails?.orderId || 'N/A'}</td>
-                          </tr>
-                          <tr style="border-bottom: 1px solid #e1bee7;">
-                              <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Payment Reference:</td>
-                              <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px;">${paymentDetails?.paymentId || 'N/A'}</td>
-                          </tr>
-                          <tr>
-                              <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Timestamp:</td>
-                              <td style="padding: 15px 0; color: #424242; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-                          </tr>
-                      </table>
-                  </div>
+                    <!-- Order Summary -->
+                    <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f3e5f5 100%); border: 2px solid #e1bee7; border-radius: 12px; padding: 30px; margin-bottom: 35px;">
+                        <h3 style="color: #4a148c; margin: 0 0 25px 0; font-size: 22px; font-weight: 500; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
+                            Order Summary
+                        </h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="border-bottom: 2px solid #e1bee7;">
+                                <td style="padding: 15px 0; font-weight: 600; color: #37474f; width: 150px;">Service Type:</td>
+                                <td style="padding: 15px 0; color: #4a148c; font-weight: 600; font-size: 18px;">${serviceName}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1bee7;">
+                                <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Investment:</td>
+                                <td style="padding: 15px 0; color: #2e7d32; font-weight: 700; font-size: 22px;">₹${paymentDetails?.amount || '599'}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1bee7;">
+                                <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Reference:</td>
+                                <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; background: rgba(255,255,255,0.8); padding: 8px 15px; border-radius: 4px; font-weight: 600;">${paymentDetails?.orderId || 'N/A'}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1bee7;">
+                                <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Payment Reference:</td>
+                                <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px;">${paymentDetails?.paymentId || 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Timestamp:</td>
+                                <td style="padding: 15px 0; color: #424242; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+                            </tr>
+                        </table>
+                    </div>
 
-                  <!-- Service Timeline -->
-                  <div style="background-color: #fff3e0; border-left: 6px solid #ff9800; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h3 style="color: #e65100; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Service Timeline</h3>
-                      <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
-                          <p style="color: #424242; margin: 0; line-height: 1.7; font-size: 16px;">
-                              Your comprehensive astrology report will be meticulously prepared by our certified astrologers 
-                              and delivered directly to your email address within <strong style="color: #e65100;">24-48 hours</strong> 
-                              of this confirmation.
-                          </p>
-                      </div>
-                  </div>
+                    <!-- Service Timeline -->
+                    <div style="background-color: #fff3e0; border-left: 6px solid #ff9800; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+                        <h3 style="color: #e65100; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Service Timeline</h3>
+                        <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
+                            <p style="color: #424242; margin: 0; line-height: 1.7; font-size: 16px;">
+                                Your comprehensive astrology report will be meticulously prepared by our certified astrologers 
+                                and delivered directly to your email address within <strong style="color: #e65100;">24-48 hours</strong> 
+                                of this confirmation.
+                            </p>
+                        </div>
+                    </div>
 
-                  <!-- Process Overview -->
-                  <div style="background-color: #f1f8e9; border-left: 6px solid #4caf50; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-                      <h3 style="color: #2e7d32; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">What Happens Next</h3>
-                      <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
-                          <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-                              <p style="margin: 0; color: #424242; font-weight: 500;">Expert Analysis Phase</p>
-                              <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Our certified astrologers will analyze your specific requirements</p>
-                          </div>
-                          <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-                              <p style="margin: 0; color: #424242; font-weight: 500;">Report Preparation</p>
-                              <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Detailed, personalized insights will be compiled into your report</p>
-                          </div>
-                          <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-                              <p style="margin: 0; color: #424242; font-weight: 500;">Quality Review</p>
-                              <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Final review and quality assurance before delivery</p>
-                          </div>
-                          <div style="padding-left: 20px; border-left: 3px solid #4caf50;">
-                              <p style="margin: 0; color: #424242; font-weight: 500;">Report Delivery</p>
-                              <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Complete report delivered via email with follow-up support</p>
-                          </div>
-                      </div>
-                  </div>
+                    <!-- Process Overview -->
+                    <div style="background-color: #f1f8e9; border-left: 6px solid #4caf50; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+                        <h3 style="color: #2e7d32; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">What Happens Next</h3>
+                        <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
+                            <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+                                <p style="margin: 0; color: #424242; font-weight: 500;">Expert Analysis Phase</p>
+                                <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Our certified astrologers will analyze your specific requirements</p>
+                            </div>
+                            <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+                                <p style="margin: 0; color: #424242; font-weight: 500;">Report Preparation</p>
+                                <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Detailed, personalized insights will be compiled into your report</p>
+                            </div>
+                            <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
+                                <p style="margin: 0; color: #424242; font-weight: 500;">Quality Review</p>
+                                <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Final review and quality assurance before delivery</p>
+                            </div>
+                            <div style="padding-left: 20px; border-left: 3px solid #4caf50;">
+                                <p style="margin: 0; color: #424242; font-weight: 500;">Report Delivery</p>
+                                <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Complete report delivered via email with follow-up support</p>
+                            </div>
+                        </div>
+                    </div>
 
-                  <!-- Support Section -->
-                  <div style="background-color: #f5f5f5; border-radius: 10px; padding: 25px; margin-bottom: 30px; border: 1px solid #e0e0e0;">
-                      <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Customer Support</h3>
-                      <p style="color: #424242; margin: 0 0 15px 0; line-height: 1.6;">
-                          Should you have any questions or require assistance, our dedicated support team is available to help:
-                      </p>
-                      <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #1976d2;">
-                          <table style="width: 100%; border-collapse: collapse;">
-                              <tr>
-                                  <td style="padding: 8px 0; color: #37474f; font-weight: 600; width: 120px;">Email Support:</td>
-                                  <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">israelitesshopping171@gmail.com</td>
-                              </tr>
-                              <tr>
-                                  <td style="padding: 8px 0; color: #37474f; font-weight: 600;">Response Time:</td>
-                                  <td style="padding: 8px 0; color: #424242;">Within 4-6 hours during business hours</td>
-                              </tr>
-                          </table>
-                          <p style="margin: 15px 0 0 0; color: #616161; font-size: 14px;">
-                              You may also reply directly to this email for any inquiries.
-                          </p>
-                      </div>
-                  </div>
+                    <!-- Support Section -->
+                    <div style="background-color: #f5f5f5; border-radius: 10px; padding: 25px; margin-bottom: 30px; border: 1px solid #e0e0e0;">
+                        <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Customer Support</h3>
+                        <p style="color: #424242; margin: 0 0 15px 0; line-height: 1.6;">
+                            Should you have any questions or require assistance, our dedicated support team is available to help:
+                        </p>
+                        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #1976d2;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px 0; color: #37474f; font-weight: 600; width: 120px;">Email Support:</td>
+                                    <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">israelitesshopping171@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #37474f; font-weight: 600;">Response Time:</td>
+                                    <td style="padding: 8px 0; color: #424242;">Within 4-6 hours during business hours</td>
+                                </tr>
+                            </table>
+                            <p style="margin: 15px 0 0 0; color: #616161; font-size: 14px;">
+                                You may also reply directly to this email for any inquiries.
+                            </p>
+                        </div>
+                    </div>
 
-                  <!-- Important Notice -->
-                  <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border: 2px solid #ffb74d; border-radius: 8px; padding: 20px; margin-bottom: 35px;">
-                      <h4 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Important Information</h4>
-                      <ul style="color: #424242; margin: 0; padding-left: 20px; line-height: 1.8;">
-                          <li>Please save this email as confirmation of your order</li>
-                          <li>Your order reference number is: <strong style="color: #e65100;">${paymentDetails?.orderId || 'N/A'}</strong></li>
-                          <li>All reports are prepared by certified, experienced astrologers</li>
-                          <li>Reports are delivered in PDF format for easy access and printing</li>
-                      </ul>
-                  </div>
+                    <!-- Important Notice -->
+                    <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border: 2px solid #ffb74d; border-radius: 8px; padding: 20px; margin-bottom: 35px;">
+                        <h4 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Important Information</h4>
+                        <ul style="color: #424242; margin: 0; padding-left: 20px; line-height: 1.8;">
+                            <li>Please save this email as confirmation of your order</li>
+                            <li>Your order reference number is: <strong style="color: #e65100;">${paymentDetails?.orderId || 'N/A'}</strong></li>
+                            <li>All reports are prepared by certified, experienced astrologers</li>
+                            <li>Reports are delivered in PDF format for easy access and printing</li>
+                        </ul>
+                    </div>
 
-                  <!-- Appreciation Message -->
-                  <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); border-radius: 10px; color: white; margin-bottom: 20px;">
-                      <h3 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 400;">Thank You for Your Trust</h3>
-                      <p style="margin: 0; font-size: 16px; opacity: 0.95; line-height: 1.6;">
-                          We appreciate your confidence in SriAstroVeda for your astrological guidance. 
-                          Our commitment is to provide you with accurate, insightful, and meaningful astrological consultation.
-                      </p>
-                  </div>
-              </div>
+                    <!-- Appreciation Message -->
+                    <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); border-radius: 10px; color: white; margin-bottom: 20px;">
+                        <h3 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 400;">Thank You for Your Trust</h3>
+                        <p style="margin: 0; font-size: 16px; opacity: 0.95; line-height: 1.6;">
+                            We appreciate your confidence in SriAstroVeda for your astrological guidance. 
+                            Our commitment is to provide you with accurate, insightful, and meaningful astrological consultation.
+                        </p>
+                    </div>
+                </div>
 
-              <!-- Footer -->
-              <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 35px; text-align: center;">
-                  <h3 style="color: #fff; margin: 0 0 15px 0; font-size: 22px; font-weight: 300; letter-spacing: 1px;">SriAstroVeda</h3>
-                  <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Premium Astrology Services</p>
-                  <p style="margin: 0; font-size: 13px; opacity: 0.7;">
-                      Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: israelitesshopping171@gmail.com
-                  </p>
-              </div>
-          </div>
-      </body>
-      </html>`;
+                <!-- Footer -->
+                <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 35px; text-align: center;">
+                    <h3 style="color: #fff; margin: 0 0 15px 0; font-size: 22px; font-weight: 300; letter-spacing: 1px;">SriAstroVeda</h3>
+                    <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Premium Astrology Services</p>
+                    <p style="margin: 0; font-size: 13px; opacity: 0.7;">
+                        Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: <a href="mailto:israelitesshopping171@gmail.com" style="color:#fff;">israelitesshopping171@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
 
     
-    
-    const adminSubject = `PAID ${serviceName} Request - ${name} - ₹${paymentDetails?.amount || '599'} - SriAstroVeda`;
-    const customerSubject = `Order Confirmation - ${serviceName} - SriAstroVeda (${paymentDetails?.orderId || 'N/A'})`;
-
-    // **Send Email 1: To Admin with CC**
+        // Mail options
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: adminEmail,
@@ -596,7 +1012,6 @@ app.post("/send-astro-email", async (req, res) => {
       replyTo: email
     };
 
-    // **Send Email 2: To Customer with Admin CC**
     const customerMailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -605,75 +1020,70 @@ app.post("/send-astro-email", async (req, res) => {
       html: customerEmailHTML
     };
 
-    // **Send both emails concurrently**
+    // Send both emails concurrently
     await Promise.all([
       transporter.sendMail(adminMailOptions),
       transporter.sendMail(customerMailOptions)
     ]);
 
-    
+    // WhatsApp (safe fallbacks)
     try {
-        // Clean phone number
-        let recipient = phone.replace(/[\s\-\+]/g, '');
-        if (!recipient.startsWith('91')) {
-            recipient = '91' + recipient;
-        }
-        
-        console.log('Sending WhatsApp to:', recipient);
-        
-        const whatsappPayload = {
-            to: recipient,
-            type: "template", 
-            callback_data: "order_confirmation_sent",
-            template: {
-            id: "1160163365950061",
-            header_media_url: "https://sacredrelm.com/static/media/logo.aade94b43e178c164667.png",
-            body_text_variables: `${name}|${paymentDetails.orderId}|${serviceName}|${paymentDetails.amount}`
-            }
-        };
-
-        const whatsappResponse = await axios.post(
-            `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
-            whatsappPayload,
-            {
-            headers: {
-                "x-api-key": process.env.CAMPH_API_KEY,
-                "Content-Type": "application/json"
-            }
-            }
-        );
-
-        console.log('WhatsApp sent successfully:', whatsappResponse.data);
-
-        } catch (whatsappError) {
-        console.error('WhatsApp Error Details:');
-        console.error('Status:', whatsappError.response?.status);
-        console.error('Error Data:', whatsappError.response?.data);
-        console.error('Request URL:', whatsappError.config?.url);
-        console.error('Request Payload:', whatsappError.config?.data);
-        }
-
-    
-    res.status(200).json({ 
-      success: true, 
-      message: "Astrology service request submitted successfully!",
-      serviceType: serviceName,
-      requestId: paymentDetails?.orderId || generateRequestId(),
-      emailsSent: {
-        adminEmail: adminEmail,
-        customerEmail: email,
+      let recipient = (phone || "").replace(/[\s\-\+]/g, "");
+      if (recipient && !recipient.startsWith("91")) {
+        recipient = "91" + recipient;
       }
-    });
+      console.log("Sending WhatsApp to:", recipient || "N/A");
 
+      const waOrder = paymentDetails?.orderId || "N/A";
+      const waAmount = paymentDetails?.amount || "N/A";
+
+      const whatsappPayload = {
+        to: recipient,
+        type: "template",
+        callback_data: "order_confirmation_sent",
+        template: {
+          id: "3674810169487090",
+          body_text_variables: `${name}|${waOrder}|${service || "N/A"}|${waAmount}`
+        }
+      };
+
+      const whatsappResponse = await axios.post(
+        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
+        whatsappPayload,
+        {
+          headers: {
+            "x-api-key": process.env.CAMPH_API_KEY,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      console.log("WhatsApp sent successfully:", whatsappResponse.data);
+    } catch (whatsappError) {
+      console.error("WhatsApp Error Details:");
+      console.error("Status:", whatsappError.response?.status);
+      console.error("Error Data:", whatsappError.response?.data);
+      console.error("Request URL:", whatsappError.config?.url);
+      console.error("Request Payload:", whatsappError.config?.data);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Astrology service request submitted successfully!",
+      serviceType: service || "N/A",
+      requestId: paymentDetails?.orderId || generateRequestId(),
+      emailsSent: { adminEmail, customerEmail: email }
+    });
   } catch (error) {
     console.error("Error processing astro email request:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Failed to process astrology service request!", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Failed to process astrology service request!",
+      error: error.message
     });
   }
 });
+
 
 app.post("/pending-payment-email", async (req, res) => {
   try {
