@@ -185,552 +185,19 @@ app.post("/verify-payment", async (req, res) => {
 });
 
 // Email Sending Route for Astrology Services (Optimized)
-// app.post("/send-astro-email", async (req, res) => {
-
-//   try {
-//     console.log('Astrology Email Request:', JSON.stringify(req.body));
-//     const { 
-//       name, 
-//       email, 
-//       phone, 
-//       service, 
-//       reportType, 
-//       birthDetails,
-//       language = 'English',
-//       additionalInfo,
-//       paymentDetails,
-//       specialRequests = null // Optional field for specific questions asked by the user
-//     } = req.body;
-
-//     // Validate required fields
-//     if (!name || !email || !phone) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Name, email, and phone are required fields"
-//       });
-//     }
-
-//     const adminEmail = "israelitesshopping171@gmail.com";
-
-//     // Service type mapping
-//     const serviceMap = {
-//         'numerology': 'Numerology Reading',
-//         'nakshatra': 'Nakshatra Reading',
-//         'dasha-period': 'Dasha Period Reading',
-//         'ascendant-analysis': 'Ascendant Analysis',
-//         'your-life': 'Your Life Path Reading',
-//         'personalized': 'Personalized Astrology Report',
-//         'year-analysis': 'Year Analysis',
-//         'daily-horoscope': 'Daily Horoscope',
-//         'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
-//         'career-guidance': 'Career Guidance',
-//         'birth-chart': 'Birth Chart Generation',
-//         'horoscope': 'Horoscope Reading',
-//         'nature-analysis': 'Nature Analysis',
-//         'health-index': 'Health Index',
-//         'lal-kitab': 'Lal Kitab Analysis',
-//         'sade-sati-life': 'Sade Sati Life Analysis',
-//         'gemstone-consultation': 'Gemstone Consultation',
-//         'love-report': 'Love Report',
-//         'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-//         'kundli': 'Kundli Analysis 200+ Pages',
-//     };
-
-//     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
-
-//     // Helper function to generate request ID
-//     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
-
-//     // **ADMIN EMAIL HTML TEMPLATE**
-//     // const adminEmailHTML = `
-//     //   <!DOCTYPE html>
-//     //   <html>
-//     //   <head>
-//     //       <meta charset="utf-8">
-//     //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//     //       <title>New Astrology Service Request</title>
-//     //   </head>
-//     //   <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
-//     //       <div style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-              
-//     //           <!-- Header -->
-//     //           <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 40px 30px; text-align: center;">
-//     //               <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 0.5px;">
-//     //                   NEW PAID ASTROLOGY SERVICE REQUEST
-//     //               </h1>
-//     //               <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 16px; font-weight: 300;">SriAstroVeda - Premium Service Request</p>
-//     //           </div>
-
-//     //           <!-- Priority Alert -->
-//     //           <div style="background-color: #d32f2f; color: white; padding: 18px; text-align: center; font-weight: 600; font-size: 16px;">
-//     //               HIGH PRIORITY - PAID SERVICE - PROCESS WITHIN 24 HOURS
-//     //           </div>
-
-//     //           <!-- Client Details -->
-//     //           <div style="padding: 40px 30px;">
-//     //               <div style="background-color: #f5f7fa; border-left: 6px solid #1976d2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                   <h2 style="color: #1565c0; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Client Information</h2>
-//     //                   <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Full Name:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${name}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Email Address:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${email}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Phone Number:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${phone}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Service Requested:</td>
-//     //                           <td style="padding: 12px 0; color: #1976d2; font-weight: 600; border-bottom: 1px solid #e0e0e0;">${serviceName}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Preferred Language:</td>
-//     //                           <td style="padding: 12px 0; color: #424242;">${language}</td>
-//     //                       </tr>
-//     //                   </table>
-//     //               </div>
-
-//     //               ${birthDetails ? `
-//     //                     <!-- Birth Details -->
-//     //                     <div style="background-color: #faf8ff; border-left: 6px solid #7b1fa2; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                         <h2 style="color: #6a1b9a; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Birth Details</h2>
-//     //                         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-//     //                             <tr>
-//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Date of Birth:</td>
-//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.dateOfBirth || 'Not provided'}</td>
-//     //                             </tr>
-//     //                             <tr>
-//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Time of Birth:</td>
-//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.timeOfBirth || 'Not provided'}</td>
-//     //                             </tr>
-//     //                             <tr>
-//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Place of Birth:</td>
-//     //                                 <td style="padding: 12px 0; color: #424242; border-bottom: 1px solid #e0e0e0;">${birthDetails?.placeOfBirth || 'Not provided'}</td>
-//     //                             </tr>
-//     //                             <tr>
-//     //                                 <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Gender:</td>
-//     //                                 <td style="padding: 12px 0; color: #424242;">${birthDetails?.gender || 'Not specified'}</td>
-//     //                             </tr>
-//     //                         </table>
-//     //                     </div>
-//     //                     ` : ''}
-
-
-//     //               ${reportType ? `
-//     //               <!-- Report Type -->
-//     //               <div style="background-color: #fff8f0; border-left: 6px solid #f57c00; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                   <h2 style="color: #ef6c00; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Report Specification</h2>
-//     //                   <p style="margin: 15px 0 0 0; color: #424242; font-size: 16px; font-weight: 500;">${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Horoscope</p>
-//     //               </div>
-//     //               ` : ''}
-
-//     //               ${paymentDetails ? `
-//     //               <!-- Payment Information -->
-//     //               <div style="background-color: #f1f8e9; border-left: 6px solid #388e3c; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                   <h2 style="color: #2e7d32; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Payment Verification</h2>
-//     //                   <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; width: 160px; border-bottom: 1px solid #e0e0e0;">Payment Status:</td>
-//     //                           <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">${paymentDetails.status || 'COMPLETED'}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Amount Received:</td>
-//     //                           <td style="padding: 12px 0; color: #2e7d32; font-weight: 700; font-size: 20px; border-bottom: 1px solid #e0e0e0;">₹${paymentDetails.amount || 'N/A'}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Payment Reference:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.paymentId || 'N/A'}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f; border-bottom: 1px solid #e0e0e0;">Order Reference:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; border-bottom: 1px solid #e0e0e0;">${paymentDetails.orderId || 'N/A'}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 12px 0; font-weight: 600; color: #37474f;">Payment Gateway:</td>
-//     //                           <td style="padding: 12px 0; color: #424242; font-weight: 500;">Razorpay Integration</td>
-//     //                       </tr>
-//     //                   </table>
-//     //               </div>
-//     //               ` : ''}
-
-//     //               <!-- Additional Information -->
-//     //               <div style="background-color: #fafafa; border-left: 6px solid #607d8b; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                   <h2 style="color: #455a64; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Additional Information</h2>
-//     //                   <div style="background: white; padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #e0e0e0;">
-//     //                       <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">${additionalInfo || 'No additional information provided by the customer.'}</p>
-//     //                   </div>
-//     //               </div>
-
-//     //               ${specialRequests ? `
-//     //               <!-- User Questions -->
-//     //               <div style="background-color: #fff8e1; border-left: 6px solid #ffa000; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//     //                   <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Specific Questions Asked by User</h2>
-//     //                   <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px solid #ffcc02;">
-//     //                       <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px; font-weight: 500; font-style: italic;">"${specialRequests}"</p>
-//     //                       <p style="margin: 10px 0 0 0; color: #e65100; font-size: 13px; font-weight: 600;">⚠️ Please ensure these specific questions are addressed in the report</p>
-//     //                   </div>
-//     //               </div>
-//     //               ` : ''}
-
-//     //               <!-- Action Items -->
-//     //               <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%); border: 2px solid #ffb74d; padding: 25px; margin-bottom: 30px; border-radius: 8px;">
-//     //                   <h2 style="color: #e65100; margin-top: 0; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Required Actions</h2>
-//     //                   <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px; margin-top: 15px;">
-//     //                       <ol style="color: #424242; line-height: 2; margin: 0; font-size: 15px;">
-//     //                           <li><strong>Verify all payment details listed above</strong></li>
-//     //                           <li><strong>Begin preparation of ${serviceName} for the customer</strong></li>
-//     //                           <li><strong>Complete and deliver the report within 24-48 hours</strong></li>
-//     //                           <li><strong>Send confirmation email once processing begins</strong></li>
-//     //                           <li><strong>Ensure quality review before final delivery</strong></li>
-//     //                       </ol>
-//     //                   </div>
-//     //               </div>
-
-//     //               <!-- Request Metadata -->
-//     //               <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
-//     //                   <h3 style="color: #37474f; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Request Metadata</h3>
-//     //                   <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-//     //                       <tr>
-//     //                           <td style="padding: 8px 0; color: #616161; width: 140px;">Received Time:</td>
-//     //                           <td style="padding: 8px 0; color: #37474f; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 8px 0; color: #616161;">Platform Source:</td>
-//     //                           <td style="padding: 8px 0; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 8px 0; color: #616161;">Customer Contact:</td>
-//     //                           <td style="padding: 8px 0; color: #1976d2; font-weight: 500;">${email}</td>
-//     //                       </tr>
-//     //                       <tr>
-//     //                           <td style="padding: 8px 0; color: #616161;">Service Priority:</td>
-//     //                           <td style="padding: 8px 0; color: #d32f2f; font-weight: 600;">HIGH (PAID SERVICE)</td>
-//     //                       </tr>
-//     //                   </table>
-//     //               </div>
-//     //           </div>
-
-//     //           <!-- Footer -->
-//     //           <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 30px; text-align: center;">
-//     //               <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600;">SriAstroVeda</h3>
-//     //               <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">Premium Astrology Services</p>
-//     //               <p style="margin: 0; font-size: 12px; opacity: 0.7;">Automated Service Request Notification System</p>
-//     //           </div>
-//     //       </div>
-//     //   </body>
-//     //   </html>
-//     // `;
-//     const adminEmailHTML = `
-//         <!DOCTYPE html>
-//         <html>
-//         <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paid Astrology Service</title></head>
-//         <body style="margin:0;padding:16px;font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;white-space:pre-wrap;">
-//         Astrology Service Request (Paid)
-
-//         Name: ${name}
-//         Email: ${email}
-//         Phone: ${phone}
-
-//         Service: ${service || 'N/A'}
-//         Report Type: ${reportType || 'N/A'}
-//         Language: ${language || 'N/A'}
-
-//         ${birthDetails ? `Birth Details:
-//         Date of Birth: ${birthDetails?.dob || 'N/A'}
-//         Time of Birth: ${birthDetails?.time || 'N/A'}
-//         Place of Birth: ${birthDetails?.place || 'N/A'}
-//         Gender: ${birthDetails?.gender || 'N/A'}` : ''}
-
-//         ${paymentDetails ? `Payment:
-//         Status: ${paymentDetails?.status || 'N/A'}
-//         Amount: ${paymentDetails?.amount || 'N/A'}
-//         Payment ID: ${paymentDetails?.paymentId || 'N/A'}
-//         Order ID: ${paymentDetails?.orderId || 'N/A'}` : ''}
-
-//         ${additionalInfo ? `Additional Info:
-//         ${additionalInfo}` : ''}
-
-//         ${specialRequests ? `Special Requests:
-//         ${specialRequests}` : ''}
-
-//         Received: ${new Date().toISOString()}
-//         </body>
-//         </html>
-//     `;
-
-
-//     // **CUSTOMER EMAIL HTML TEMPLATE**
-//     const customerEmailHTML = `
-//       <!DOCTYPE html>
-//       <html>
-//       <head>
-//           <meta charset="utf-8">
-//           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//           <title>Order Confirmation - SriAstroVeda</title>
-//       </head>
-//       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
-//           <div style="max-width: 700px; margin: 0 auto; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-              
-//               <!-- Header -->
-//               <div style="background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); padding: 50px 30px; text-align: center;">
-//                   <h1 style="color: white; margin: 0; font-size: 36px; font-weight: 300; letter-spacing: 2px;">
-//                       SriAstroVeda
-//                   </h1>
-//                   <p style="color: #c5cae9; margin: 15px 0 0 0; font-size: 18px; font-weight: 300; letter-spacing: 0.5px;">Premium Astrology Services</p>
-//               </div>
-
-//               <!-- Success Banner -->
-//               <div style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%); color: white; padding: 25px; text-align: center;">
-//                   <h2 style="margin: 0; font-size: 24px; font-weight: 500;">Order Confirmation Successful</h2>
-//                   <p style="margin: 12px 0 0 0; font-size: 16px; opacity: 0.95;">Your premium astrology service has been confirmed</p>
-//               </div>
-
-//               <!-- Main Content -->
-//               <div style="padding: 40px 30px;">
-                  
-//                   <!-- Personal Greeting -->
-//                   <div style="margin-bottom: 35px;">
-//                       <h2 style="color: #1a237e; font-size: 26px; margin: 0 0 20px 0; font-weight: 400;">Dear ${name},</h2>
-//                       <p style="color: #424242; font-size: 16px; line-height: 1.7; margin: 0;">
-//                           Thank you for choosing SriAstroVeda for your astrological consultation. We have successfully received your order 
-//                           and confirmed your payment. Our expert astrologers are now prepared to provide you with detailed, personalized insights.
-//                       </p>
-//                   </div>
-
-//                   <!-- Order Summary -->
-//                   <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f3e5f5 100%); border: 2px solid #e1bee7; border-radius: 12px; padding: 30px; margin-bottom: 35px;">
-//                       <h3 style="color: #4a148c; margin: 0 0 25px 0; font-size: 22px; font-weight: 500; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
-//                           Order Summary
-//                       </h3>
-//                       <table style="width: 100%; border-collapse: collapse;">
-//                           <tr style="border-bottom: 2px solid #e1bee7;">
-//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f; width: 150px;">Service Type:</td>
-//                               <td style="padding: 15px 0; color: #4a148c; font-weight: 600; font-size: 18px;">${serviceName}</td>
-//                           </tr>
-//                           <tr style="border-bottom: 1px solid #e1bee7;">
-//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Investment:</td>
-//                               <td style="padding: 15px 0; color: #2e7d32; font-weight: 700; font-size: 22px;">₹${paymentDetails?.amount || '599'}</td>
-//                           </tr>
-//                           <tr style="border-bottom: 1px solid #e1bee7;">
-//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Reference:</td>
-//                               <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; background: rgba(255,255,255,0.8); padding: 8px 15px; border-radius: 4px; font-weight: 600;">${paymentDetails?.orderId || 'N/A'}</td>
-//                           </tr>
-//                           <tr style="border-bottom: 1px solid #e1bee7;">
-//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Payment Reference:</td>
-//                               <td style="padding: 15px 0; color: #424242; font-family: 'Courier New', monospace; font-size: 14px;">${paymentDetails?.paymentId || 'N/A'}</td>
-//                           </tr>
-//                           <tr>
-//                               <td style="padding: 15px 0; font-weight: 600; color: #37474f;">Order Timestamp:</td>
-//                               <td style="padding: 15px 0; color: #424242; font-weight: 500;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-//                           </tr>
-//                       </table>
-//                   </div>
-
-//                   <!-- Service Timeline -->
-//                   <div style="background-color: #fff3e0; border-left: 6px solid #ff9800; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//                       <h3 style="color: #e65100; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Service Timeline</h3>
-//                       <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
-//                           <p style="color: #424242; margin: 0; line-height: 1.7; font-size: 16px;">
-//                               Your comprehensive astrology report will be meticulously prepared by our certified astrologers 
-//                               and delivered directly to your email address within <strong style="color: #e65100;">24-48 hours</strong> 
-//                               of this confirmation.
-//                           </p>
-//                       </div>
-//                   </div>
-
-//                   <!-- Process Overview -->
-//                   <div style="background-color: #f1f8e9; border-left: 6px solid #4caf50; padding: 25px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
-//                       <h3 style="color: #2e7d32; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">What Happens Next</h3>
-//                       <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 6px;">
-//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-//                               <p style="margin: 0; color: #424242; font-weight: 500;">Expert Analysis Phase</p>
-//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Our certified astrologers will analyze your specific requirements</p>
-//                           </div>
-//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-//                               <p style="margin: 0; color: #424242; font-weight: 500;">Report Preparation</p>
-//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Detailed, personalized insights will be compiled into your report</p>
-//                           </div>
-//                           <div style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #4caf50;">
-//                               <p style="margin: 0; color: #424242; font-weight: 500;">Quality Review</p>
-//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Final review and quality assurance before delivery</p>
-//                           </div>
-//                           <div style="padding-left: 20px; border-left: 3px solid #4caf50;">
-//                               <p style="margin: 0; color: #424242; font-weight: 500;">Report Delivery</p>
-//                               <p style="margin: 5px 0 0 0; color: #616161; font-size: 14px;">Complete report delivered via email with follow-up support</p>
-//                           </div>
-//                       </div>
-//                   </div>
-
-//                   <!-- Support Section -->
-//                   <div style="background-color: #f5f5f5; border-radius: 10px; padding: 25px; margin-bottom: 30px; border: 1px solid #e0e0e0;">
-//                       <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Customer Support</h3>
-//                       <p style="color: #424242; margin: 0 0 15px 0; line-height: 1.6;">
-//                           Should you have any questions or require assistance, our dedicated support team is available to help:
-//                       </p>
-//                       <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #1976d2;">
-//                           <table style="width: 100%; border-collapse: collapse;">
-//                               <tr>
-//                                   <td style="padding: 8px 0; color: #37474f; font-weight: 600; width: 120px;">Email Support:</td>
-//                                   <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">israelitesshopping171@gmail.com</td>
-//                               </tr>
-//                               <tr>
-//                                   <td style="padding: 8px 0; color: #37474f; font-weight: 600;">Response Time:</td>
-//                                   <td style="padding: 8px 0; color: #424242;">Within 4-6 hours during business hours</td>
-//                               </tr>
-//                           </table>
-//                           <p style="margin: 15px 0 0 0; color: #616161; font-size: 14px;">
-//                               You may also reply directly to this email for any inquiries.
-//                           </p>
-//                       </div>
-//                   </div>
-
-//                   <!-- Important Notice -->
-//                   <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border: 2px solid #ffb74d; border-radius: 8px; padding: 20px; margin-bottom: 35px;">
-//                       <h4 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Important Information</h4>
-//                       <ul style="color: #424242; margin: 0; padding-left: 20px; line-height: 1.8;">
-//                           <li>Please save this email as confirmation of your order</li>
-//                           <li>Your order reference number is: <strong style="color: #e65100;">${paymentDetails?.orderId || 'N/A'}</strong></li>
-//                           <li>All reports are prepared by certified, experienced astrologers</li>
-//                           <li>Reports are delivered in PDF format for easy access and printing</li>
-//                       </ul>
-//                   </div>
-
-//                   <!-- Appreciation Message -->
-//                   <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); border-radius: 10px; color: white; margin-bottom: 20px;">
-//                       <h3 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 400;">Thank You for Your Trust</h3>
-//                       <p style="margin: 0; font-size: 16px; opacity: 0.95; line-height: 1.6;">
-//                           We appreciate your confidence in SriAstroVeda for your astrological guidance. 
-//                           Our commitment is to provide you with accurate, insightful, and meaningful astrological consultation.
-//                       </p>
-//                   </div>
-//               </div>
-
-//               <!-- Footer -->
-//               <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 35px; text-align: center;">
-//                   <h3 style="color: #fff; margin: 0 0 15px 0; font-size: 22px; font-weight: 300; letter-spacing: 1px;">SriAstroVeda</h3>
-//                   <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Premium Astrology Services</p>
-//                   <p style="margin: 0; font-size: 13px; opacity: 0.7;">
-//                       Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: israelitesshopping171@gmail.com
-//                   </p>
-//               </div>
-//           </div>
-//       </body>
-//       </html>`;
-
-    
-    
-    
-//     //   const adminSubject = `PAID ${serviceName} Request - ${name} - ₹${paymentDetails?.amount || '599'} - SriAstroVeda`;
-//     const adminSubject = `PAID ${service || 'N/A'} - ${name} | ₹${paymentDetails?.amount || 'N/A'} | Order: ${paymentDetails?.orderId || 'N/A'}`;
-
-//     const customerSubject = `Order Confirmation - ${serviceName} - SriAstroVeda (${paymentDetails?.orderId || 'N/A'})`;
-
-//     // **Send Email 1: To Admin with CC**
-//     const adminMailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: adminEmail,
-//       subject: adminSubject,
-//       html: adminEmailHTML,
-//       replyTo: email
-//     };
-
-//     // **Send Email 2: To Customer with Admin CC**
-//     const customerMailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: email,
-//       cc: adminEmail,
-//       subject: customerSubject,
-//       html: customerEmailHTML
-//     };
-
-//     // **Send both emails concurrently**
-//     await Promise.all([
-//       transporter.sendMail(adminMailOptions),
-//       transporter.sendMail(customerMailOptions)
-//     ]);
-
-    
-//     try {
-//         // Clean phone number
-//         let recipient = phone.replace(/[\s\-\+]/g, '');
-//         if (!recipient.startsWith('91')) {
-//             recipient = '91' + recipient;
-//         }
-        
-//         console.log('Sending WhatsApp to:', recipient);
-        
-//         const whatsappPayload = {
-//             to: recipient,
-//             type: "template", 
-//             callback_data: "order_confirmation_sent",
-//             template: {
-//             id: "3674810169487090",
-//             // header_media_url: "https://sacredrelm.com/static/media/logo.aade94b43e178c164667.png",
-//             body_text_variables: `${name}|${paymentDetails.orderId}|${serviceName}|${paymentDetails.amount}`
-//             }
-//         };
-
-//         const whatsappResponse = await axios.post(
-//             `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
-//             whatsappPayload,
-//             {
-//             headers: {
-//                 "x-api-key": process.env.CAMPH_API_KEY,
-//                 "Content-Type": "application/json"
-//             }
-//             }
-//         );
-
-//         console.log('WhatsApp sent successfully:', whatsappResponse.data);
-
-//         } catch (whatsappError) {
-//         console.error('WhatsApp Error Details:');
-//         console.error('Status:', whatsappError.response?.status);
-//         console.error('Error Data:', whatsappError.response?.data);
-//         console.error('Request URL:', whatsappError.config?.url);
-//         console.error('Request Payload:', whatsappError.config?.data);
-//         }
-
-    
-//     res.status(200).json({ 
-//       success: true, 
-//       message: "Astrology service request submitted successfully!",
-//       serviceType: serviceName,
-//       requestId: paymentDetails?.orderId || generateRequestId(),
-//       emailsSent: {
-//         adminEmail: adminEmail,
-//         customerEmail: email,
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("Error processing astro email request:", error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: "Failed to process astrology service request!", 
-//       error: error.message 
-//     });
-//   }
-// });
-
 app.post("/send-astro-email", async (req, res) => {
   try {
     console.log("Astrology Email Request:", JSON.stringify(req.body));
-
     const {
       name,
       email,
       phone,
-      service,       // raw from frontend
-      reportType,    // raw from frontend
-      birthDetails,  // { dateOfBirth, timeOfBirth, placeOfBirth, gender }
+      service,       
+      reportType,    
+      birthDetails,  
       language = "English",
       additionalInfo,
-      paymentDetails, // { status, amount, paymentId, orderId }
+      paymentDetails,
       specialRequests = null
     } = req.body;
 
@@ -742,37 +209,29 @@ app.post("/send-astro-email", async (req, res) => {
       });
     }
 
-    // OPTIONAL: Enforce birth data as mandatory (uncomment if required)
-    // if (!birthDetails?.dateOfBirth || !birthDetails?.timeOfBirth || !birthDetails?.placeOfBirth) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "DOB, TOB, and Place of Birth are required"
-    //   });
-    // }
-
     const adminEmail = "israelitesshopping171@gmail.com";
-    // Friendly label mapping (extend as needed)
+
     const serviceMap = {
-    'numerology': 'Numerology Reading',
-    'nakshatra': 'Nakshatra Reading',
-    'dasha-period': 'Dasha Period Reading',
-    'ascendant-analysis': 'Ascendant Analysis',
-    'your-life': 'Your Life Path Reading',
-    'personalized': 'Personalized Astrology Report',
-    'year-analysis': 'Year Analysis',
-    'daily-horoscope': 'Daily Horoscope',
-    'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
-    'career-guidance': 'Career Guidance',
-    'birth-chart': 'Birth Chart Generation',
-    'horoscope': 'Horoscope Reading',
-    'nature-analysis': 'Nature Analysis',
-    'health-index': 'Health Index',
-    'lal-kitab': 'Lal Kitab Analysis',
-    'sade-sati-life': 'Sade Sati Life Analysis',
-    'gemstone-consultation': 'Gemstone Consultation',
-    'love-report': 'Love Report',
-    'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-    'kundli': 'Kundli Analysis 200+ Pages',
+        'numerology': 'Numerology Reading',
+        'nakshatra': 'Nakshatra Reading',
+        'dasha-period': 'Dasha Period Reading',
+        'ascendant-analysis': 'Ascendant Analysis',
+        'your-life': 'Your Life Path Reading',
+        'personalized': 'Personalized Astrology Report',
+        'year-analysis': 'Year Analysis',
+        'daily-horoscope': 'Daily Horoscope',
+        'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
+        'career-guidance': 'Career Guidance',
+        'birth-chart': 'Birth Chart Generation',
+        'horoscope': 'Horoscope Reading',
+        'nature-analysis': 'Nature Analysis',
+        'health-index': 'Health Index',
+        'lal-kitab': 'Lal Kitab Analysis',
+        'sade-sati-life': 'Sade Sati Life Analysis',
+        'gemstone-consultation': 'Gemstone Consultation',
+        'love-report': 'Love Report',
+        'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+        'kundli': 'Kundli Analysis 200+ Pages',
     };
 
     // Compute friendly name or fall back to raw service string
@@ -801,7 +260,7 @@ app.post("/send-astro-email", async (req, res) => {
     });
 
     // SUBJECTS (admin uses raw service/reportType only from frontend)
-    const adminSubject = `PAID ${service || "N/A"} - ${name} | ₹${paymentDetails?.amount || "N/A"} | Order: ${paymentDetails?.orderId || "N/A"}`;
+    const adminSubject = `PAID ${service || "N/A"} - ${name} | ₹${paymentDetails?.amount || "N/A"} Admin Email`;
     const customerSubject = `Order Confirmation - ${service || "Astrology Service"} - SriAstroVeda (${paymentDetails?.orderId || "N/A"})`;
 
     // MINIMAL ADMIN EMAIL (plain text style, only raw frontend fields)
@@ -1084,7 +543,6 @@ app.post("/send-astro-email", async (req, res) => {
   }
 });
 
-
 app.post("/pending-payment-email", async (req, res) => {
   try {
     console.log('Pending payment email request received:', JSON.stringify(req.body, null, 2));
@@ -1140,322 +598,323 @@ app.post("/pending-payment-email", async (req, res) => {
 
     // **CRITICAL ADMIN EMAIL HTML TEMPLATE**
     const criticalEmailHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CRITICAL - Payment Processing Failure</title>
-        <style>
-            @media only screen and (max-width: 600px) {
-                .container { width: 100% !important; }
-                .content { padding: 20px !important; }
-                .header-text { font-size: 24px !important; }
-                .section-title { font-size: 18px !important; }
-                table td { padding: 8px 0 !important; }
-            }
-        </style>
-    </head>
-    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
-        <div class="container" style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
-            
-            <!-- Critical Alert Header -->
-            <div style="background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%); padding: 40px 30px; text-align: center; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #ff9800, #ff5722); animation: pulse 2s infinite;"></div>
-                <h1 class="header-text" style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                    CRITICAL SYSTEM ALERT
-                </h1>
-                <p style="color: #ffcdd2; margin: 20px 0 0 0; font-size: 18px; font-weight: 500; opacity: 0.95;">Payment Successful - Automated Processing Failed</p>
-                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
-                    <p style="color: white; margin: 0; font-size: 16px; font-weight: 600;">SYSTEM INTERVENTION REQUIRED</p>
-                </div>
-            </div>
-
-            <!-- Urgency Status Bar -->
-            <div style="background: linear-gradient(135deg, #ff5722 0%, #ff9800 100%); color: white; padding: 25px; text-align: center; position: relative;">
-                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 20px;">
-                    <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
-                        <span style="font-weight: 700; font-size: 14px;">STATUS: CRITICAL</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
-                        <span style="font-weight: 700; font-size: 14px;">PRIORITY: IMMEDIATE</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
-                        <span style="font-weight: 700; font-size: 14px;">ACTION: MANUAL PROCESSING</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Executive Summary -->
-            <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 30%, #ffebee 100%); padding: 30px; margin: 0; border-left: 8px solid #d32f2f; position: relative;">
-                <div style="position: absolute; top: 15px; right: 15px; background: #d32f2f; color: white; padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: 600;">URGENT</div>
-                <h2 class="section-title" style="color: #b71c1c; margin: 0 0 20px 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Executive Summary</h2>
-                <div style="background: rgba(255,255,255,0.95); padding: 25px; border-radius: 12px; border: 1px solid #ef5350; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    <div style="display: grid; gap: 15px;">
-                        <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #d32f2f; border-radius: 0 8px 8px 0;">
-                            <strong style="color: #b71c1c; font-size: 16px;">Issue Classification:</strong>
-                            <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Critical system failure in automated email processing following successful payment transaction</p>
-                        </div>
-                        <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #ff9800; border-radius: 0 8px 8px 0;">
-                            <strong style="color: #f57c00; font-size: 16px;">Business Impact:</strong>
-                            <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Paying customer has not received service confirmation or processing notification</p>
-                        </div>
-                        <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #4caf50; border-radius: 0 8px 8px 0;">
-                            <strong style="color: #388e3c; font-size: 16px;">Payment Status:</strong>
-                            <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Successfully processed and verified through Razorpay gateway</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Customer Information Dashboard -->
-            <div class="content" style="padding: 40px 30px;">
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>CRITICAL - Payment Processing Failure</title>
+            <style>
+                @media only screen and (max-width: 600px) {
+                    .container { width: 100% !important; }
+                    .content { padding: 20px !important; }
+                    .header-text { font-size: 24px !important; }
+                    .section-title { font-size: 18px !important; }
+                    table td { padding: 8px 0 !important; }
+                }
+            </style>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
+            <div class="container" style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
                 
-                <!-- Customer Profile -->
-                <div style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 30%, #f3e5f5 100%); border: 2px solid #9c27b0; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #9c27b0, #673ab7, #3f51b5, #673ab7, #9c27b0);"></div>
-                    <h2 style="color: #6a1b9a; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Customer Profile</h2>
-                    <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr style="background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);">
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Field</td>
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Information</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1bee7;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Customer Name:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500; font-size: 16px;">${name}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1bee7;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Email Address:</td>
-                                <td style="padding: 18px 20px; color: #7b1fa2; font-weight: 600; font-size: 15px; word-break: break-all;">${email}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1bee7;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Phone Number:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 15px;">${phone}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1bee7;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Service Requested:</td>
-                                <td style="padding: 18px 20px; color: #7b1fa2; font-weight: 700; font-size: 16px;">${serviceName}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Language Preference:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${language}</td>
-                            </tr>
-                        </table>
+                <!-- Critical Alert Header -->
+                <div style="background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%); padding: 40px 30px; text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #ff9800, #ff5722); animation: pulse 2s infinite;"></div>
+                    <h1 class="header-text" style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        CRITICAL SYSTEM ALERT
+                    </h1>
+                    <p style="color: #ffcdd2; margin: 20px 0 0 0; font-size: 18px; font-weight: 500; opacity: 0.95;">Payment Successful - Automated Processing Failed</p>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                        <p style="color: white; margin: 0; font-size: 16px; font-weight: 600;">SYSTEM INTERVENTION REQUIRED</p>
                     </div>
                 </div>
 
-                ${birthDetails ? `
-                <!-- Birth Details Section -->
-                <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 30%, #fff8e1 100%); border: 2px solid #ffa000; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ffa000, #ff8f00, #ff6f00, #ff8f00, #ffa000);"></div>
-                    <h2 style="color: #e65100; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Birth Information</h2>
-                    <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr style="background: linear-gradient(135deg, #ffa000 0%, #ff8f00 100%);">
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase;">Detail</td>
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase;">Value</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #ffcc02;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Date of Birth:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.dateOfBirth || 'Not provided'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #ffcc02;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Time of Birth:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.timeOfBirth || 'Not provided'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #ffcc02;">
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Place of Birth:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.placeOfBirth || 'Not provided'}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Gender:</td>
-                                <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.gender || 'Not specified'}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                ` : ''}
-
-                <!-- Payment Verification Dashboard -->
-                <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 30%, #e8f5e8 100%); border: 3px solid #4caf50; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2);">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #4caf50, #8bc34a, #cddc39, #8bc34a, #4caf50);"></div>
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <h2 style="color: #1b5e20; margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Payment Verification</h2>
-                        <div style="background: #4caf50; color: white; display: inline-block; padding: 8px 20px; border-radius: 20px; margin-top: 10px; font-weight: 600; font-size: 14px;">TRANSACTION CONFIRMED</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
-                                <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Payment Field</td>
-                                <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Verification Status</td>
-                            </tr>
-                            <tr style="border-bottom: 2px solid #a5d6a7;">
-                                <td style="padding: 20px; font-weight: 700; color: #1b5e20; background: #f1f8e9; font-size: 16px;">PAYMENT STATUS:</td>
-                                <td style="padding: 20px; color: #1b5e20; font-weight: 700; text-transform: uppercase; font-size: 18px; background: linear-gradient(135deg, #c8e6c9, #a5d6a7); background-clip: text; -webkit-background-clip: text;">SUCCESSFUL - VERIFIED</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #c8e6c9;">
-                                <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Amount Received:</td>
-                                <td style="padding: 20px; color: #1b5e20; font-weight: 700; font-size: 24px;">₹${paymentDetails?.amount || '599'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #c8e6c9;">
-                                <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Payment Reference:</td>
-                                <td style="padding: 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; background: #f8f9fa; border-radius: 4px;">${paymentDetails?.paymentId || 'N/A'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #c8e6c9;">
-                                <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Order Reference:</td>
-                                <td style="padding: 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; background: #f8f9fa; border-radius: 4px;">${paymentDetails?.orderId || 'N/A'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #c8e6c9;">
-                                <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Gateway:</td>
-                                <td style="padding: 20px; color: #424242; font-weight: 500;">Razorpay Integration</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Processing Status:</td>
-                                <td style="padding: 20px; color: #d32f2f; font-weight: 700; text-transform: uppercase; font-size: 16px;">FAILED - TECHNICAL ISSUE</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Technical Analysis -->
-                <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 30%, #fff3e0 100%); border: 2px solid #ff9800; border-radius: 16px; padding: 30px; margin-bottom: 30px;">
-                    <h2 style="color: #e65100; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Technical Analysis</h2>
-                    <div style="display: grid; gap: 20px;">
-                        <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #f44336; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                            <h3 style="color: #c62828; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Root Cause Analysis</h3>
-                            <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
-                                The automated email processing system encountered multiple failures after successful payment completion. 
-                                This technical issue prevents the customer from receiving their service confirmation and processing notification.
-                            </p>
+                <!-- Urgency Status Bar -->
+                <div style="background: linear-gradient(135deg, #ff5722 0%, #ff9800 100%); color: white; padding: 25px; text-align: center; position: relative;">
+                    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 20px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
+                            <span style="font-weight: 700; font-size: 14px;">STATUS: CRITICAL</span>
                         </div>
-                        <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #ff9800; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                            <h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Customer Impact Assessment</h3>
-                            <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
-                                Customer has completed payment successfully but has not received confirmation or service processing notification. 
-                                This creates a negative customer experience and requires immediate manual intervention.
-                            </p>
+                        <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
+                            <span style="font-weight: 700; font-size: 14px;">PRIORITY: IMMEDIATE</span>
                         </div>
-                        <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #2196f3; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                            <h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Required Response</h3>
-                            <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
-                                Immediate manual processing and customer communication required to maintain service quality standards 
-                                and customer satisfaction levels.
-                            </p>
+                        <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.3);">
+                            <span style="font-weight: 700; font-size: 14px;">ACTION: MANUAL PROCESSING</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Action Protocol -->
-                <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 30%, #ffebee 100%); border: 4px solid #f44336; border-radius: 16px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(244, 67, 54, 0.2);">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f44336, #e91e63, #9c27b0, #e91e63, #f44336);"></div>
-                    <h2 style="color: #b71c1c; margin: 0 0 30px 0; font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; text-align: center;">Critical Action Protocol</h2>
-                    <div style="background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; border: 1px solid #ef5350; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
-                        
-                        <!-- Step 1 -->
-                        <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #f44336; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <div style="position: absolute; top: 15px; right: 15px; background: #f44336; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 1</div>
-                            <h3 style="margin: 0 0 15px 0; color: #c62828; font-size: 18px; font-weight: 700;">Immediate Customer Communication</h3>
-                            <div style="background: #ffebee; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                                <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
-                                    <strong>Action:</strong> Send manual acknowledgment email immediately<br>
-                                    <strong>Recipient:</strong> <span style="color: #c62828; font-weight: 600;">${email}</span><br>
-                                    <strong>Timeline:</strong> Within 15 minutes
-                                </p>
+                <!-- Executive Summary -->
+                <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 30%, #ffebee 100%); padding: 30px; margin: 0; border-left: 8px solid #d32f2f; position: relative;">
+                    <div style="position: absolute; top: 15px; right: 15px; background: #d32f2f; color: white; padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: 600;">URGENT</div>
+                    <h2 class="section-title" style="color: #b71c1c; margin: 0 0 20px 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Executive Summary</h2>
+                    <div style="background: rgba(255,255,255,0.95); padding: 25px; border-radius: 12px; border: 1px solid #ef5350; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <div style="display: grid; gap: 15px;">
+                            <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #d32f2f; border-radius: 0 8px 8px 0;">
+                                <strong style="color: #b71c1c; font-size: 16px;">Issue Classification:</strong>
+                                <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Critical system failure in automated email processing following successful payment transaction</p>
                             </div>
-                        </div>
-
-                        <!-- Step 2 -->
-                        <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #ff9800; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <div style="position: absolute; top: 15px; right: 15px; background: #ff9800; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 2</div>
-                            <h3 style="margin: 0 0 15px 0; color: #f57c00; font-size: 18px; font-weight: 700;">Service Preparation</h3>
-                            <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                                <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
-                                    <strong>Action:</strong> Begin immediate preparation of ${serviceName}<br>
-                                    <strong>Priority:</strong> Expedited processing due to technical delay<br>
-                                    <strong>Assignment:</strong> Senior astrologer
-                                </p>
+                            <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #ff9800; border-radius: 0 8px 8px 0;">
+                                <strong style="color: #f57c00; font-size: 16px;">Business Impact:</strong>
+                                <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Paying customer has not received service confirmation or processing notification</p>
                             </div>
-                        </div>
-
-                        <!-- Step 3 -->
-                        <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #4caf50; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <div style="position: absolute; top: 15px; right: 15px; background: #4caf50; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 3</div>
-                            <h3 style="margin: 0 0 15px 0; color: #388e3c; font-size: 18px; font-weight: 700;">Expedited Processing</h3>
-                            <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                                <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
-                                    <strong>Action:</strong> Complete and deliver report within 2 hours<br>
-                                    <strong>Reason:</strong> Compensation for technical delay<br>
-                                    <strong>Quality:</strong> Premium review and validation
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Step 4 -->
-                        <div style="padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #9c27b0; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <div style="position: absolute; top: 15px; right: 15px; background: #9c27b0; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 4</div>
-                            <h3 style="margin: 0 0 15px 0; color: #7b1fa2; font-size: 18px; font-weight: 700;">Customer Relations Recovery</h3>
-                            <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                                <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
-                                    <strong>Action:</strong> Personal call to apologize for technical delay<br>
-                                    <strong>Objective:</strong> Ensure customer satisfaction and trust recovery<br>
-                                    <strong>Compensation:</strong> Consider service upgrade or discount
-                                </p>
+                            <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #4caf50; border-radius: 0 8px 8px 0;">
+                                <strong style="color: #388e3c; font-size: 16px;">Payment Status:</strong>
+                                <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Successfully processed and verified through Razorpay gateway</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Incident Tracking -->
-                <div style="background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); padding: 25px; border-radius: 12px; border: 2px solid #bdbdbd;">
-                    <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 700; text-align: center;">Incident Tracking Dashboard</h3>
-                    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr style="background: linear-gradient(135deg, #607d8b 0%, #455a64 100%);">
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Tracking Field</td>
-                                <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Information</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e0e0e0;">
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident Timestamp:</td>
-                                <td style="padding: 15px 20px; color: #d32f2f; font-weight: 600; font-family: 'Courier New', monospace;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e0e0e0;">
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Source Platform:</td>
-                                <td style="padding: 15px 20px; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e0e0e0;">
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Customer Contact:</td>
-                                <td style="padding: 15px 20px; color: #1976d2; font-weight: 600;">${email}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e0e0e0;">
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident Classification:</td>
-                                <td style="padding: 15px 20px; color: #d32f2f; font-weight: 700; text-transform: uppercase;">CRITICAL - PAID CUSTOMER</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e0e0e0;">
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Expected Resolution:</td>
-                                <td style="padding: 15px 20px; color: #2e7d32; font-weight: 600;">Within 2 hours</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident ID:</td>
-                                <td style="padding: 15px 20px; color: #424242; font-family: 'Courier New', monospace; font-weight: 600;">${paymentDetails?.orderId || generateRequestId()}</td>
-                            </tr>
-                        </table>
+                <!-- Customer Information Dashboard -->
+                <div class="content" style="padding: 40px 30px;">
+                    
+                    <!-- Customer Profile -->
+                    <div style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 30%, #f3e5f5 100%); border: 2px solid #9c27b0; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #9c27b0, #673ab7, #3f51b5, #673ab7, #9c27b0);"></div>
+                        <h2 style="color: #6a1b9a; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Customer Profile</h2>
+                        <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);">
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Field</td>
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Information</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e1bee7;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Customer Name:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500; font-size: 16px;">${name}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e1bee7;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Email Address:</td>
+                                    <td style="padding: 18px 20px; color: #7b1fa2; font-weight: 600; font-size: 15px; word-break: break-all;">${email}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e1bee7;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Phone Number:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 15px;">${phone}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e1bee7;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Service Requested:</td>
+                                    <td style="padding: 18px 20px; color: #7b1fa2; font-weight: 700; font-size: 16px;">${serviceName}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Language Preference:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${language}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    ${birthDetails ? `
+                    <!-- Birth Details Section -->
+                    <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 30%, #fff8e1 100%); border: 2px solid #ffa000; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative;">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ffa000, #ff8f00, #ff6f00, #ff8f00, #ffa000);"></div>
+                        <h2 style="color: #e65100; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Birth Information</h2>
+                        <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background: linear-gradient(135deg, #ffa000 0%, #ff8f00 100%);">
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase;">Detail</td>
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase;">Value</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ffcc02;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Date of Birth:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.dateOfBirth || 'Not provided'}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ffcc02;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Time of Birth:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.timeOfBirth || 'Not provided'}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ffcc02;">
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Place of Birth:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.placeOfBirth || 'Not provided'}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Gender:</td>
+                                    <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.gender || 'Not specified'}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Payment Verification Dashboard -->
+                    <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 30%, #e8f5e8 100%); border: 3px solid #4caf50; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2);">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #4caf50, #8bc34a, #cddc39, #8bc34a, #4caf50);"></div>
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h2 style="color: #1b5e20; margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Payment Verification</h2>
+                            <div style="background: #4caf50; color: white; display: inline-block; padding: 8px 20px; border-radius: 20px; margin-top: 10px; font-weight: 600; font-size: 14px;">TRANSACTION CONFIRMED</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
+                                    <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Payment Field</td>
+                                    <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Verification Status</td>
+                                </tr>
+                                <tr style="border-bottom: 2px solid #a5d6a7;">
+                                    <td style="padding: 20px; font-weight: 700; color: #1b5e20; background: #f1f8e9; font-size: 16px;">PAYMENT STATUS:</td>
+                                    <td style="padding: 20px; color: #1b5e20; font-weight: 700; text-transform: uppercase; font-size: 18px; background: linear-gradient(135deg, #c8e6c9, #a5d6a7); background-clip: text; -webkit-background-clip: text;">SUCCESSFUL - VERIFIED</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #c8e6c9;">
+                                    <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Amount Received:</td>
+                                    <td style="padding: 20px; color: #1b5e20; font-weight: 700; font-size: 24px;">₹${paymentDetails?.amount || '599'}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #c8e6c9;">
+                                    <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Payment Reference:</td>
+                                    <td style="padding: 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; background: #f8f9fa; border-radius: 4px;">${paymentDetails?.paymentId || 'N/A'}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #c8e6c9;">
+                                    <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Order Reference:</td>
+                                    <td style="padding: 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 14px; background: #f8f9fa; border-radius: 4px;">${paymentDetails?.orderId || 'N/A'}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #c8e6c9;">
+                                    <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Gateway:</td>
+                                    <td style="padding: 20px; color: #424242; font-weight: 500;">Razorpay Integration</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 20px; font-weight: 600; color: #2e7d32; background: #fafafa;">Processing Status:</td>
+                                    <td style="padding: 20px; color: #d32f2f; font-weight: 700; text-transform: uppercase; font-size: 16px;">FAILED - TECHNICAL ISSUE</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Technical Analysis -->
+                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 30%, #fff3e0 100%); border: 2px solid #ff9800; border-radius: 16px; padding: 30px; margin-bottom: 30px;">
+                        <h2 style="color: #e65100; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Technical Analysis</h2>
+                        <div style="display: grid; gap: 20px;">
+                            <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #f44336; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                                <h3 style="color: #c62828; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Root Cause Analysis</h3>
+                                <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
+                                    The automated email processing system encountered multiple failures after successful payment completion. 
+                                    This technical issue prevents the customer from receiving their service confirmation and processing notification.
+                                </p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #ff9800; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                                <h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Customer Impact Assessment</h3>
+                                <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
+                                    Customer has completed payment successfully but has not received confirmation or service processing notification. 
+                                    This creates a negative customer experience and requires immediate manual intervention.
+                                </p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; border-left: 6px solid #2196f3; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                                <h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Required Response</h3>
+                                <p style="margin: 0; color: #424242; line-height: 1.7; font-size: 15px;">
+                                    Immediate manual processing and customer communication required to maintain service quality standards 
+                                    and customer satisfaction levels.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Protocol -->
+                    <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 30%, #ffebee 100%); border: 4px solid #f44336; border-radius: 16px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(244, 67, 54, 0.2);">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f44336, #e91e63, #9c27b0, #e91e63, #f44336);"></div>
+                        <h2 style="color: #b71c1c; margin: 0 0 30px 0; font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; text-align: center;">Critical Action Protocol</h2>
+                        <div style="background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; border: 1px solid #ef5350; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
+                            
+                            <!-- Step 1 -->
+                            <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #f44336; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <div style="position: absolute; top: 15px; right: 15px; background: #f44336; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 1</div>
+                                <h3 style="margin: 0 0 15px 0; color: #c62828; font-size: 18px; font-weight: 700;">Immediate Customer Communication</h3>
+                                <div style="background: #ffebee; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                    <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+                                        <strong>Action:</strong> Send manual acknowledgment email immediately<br>
+                                        <strong>Recipient:</strong> <span style="color: #c62828; font-weight: 600;">${email}</span><br>
+                                        <strong>Timeline:</strong> Within 15 minutes
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #ff9800; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <div style="position: absolute; top: 15px; right: 15px; background: #ff9800; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 2</div>
+                                <h3 style="margin: 0 0 15px 0; color: #f57c00; font-size: 18px; font-weight: 700;">Service Preparation</h3>
+                                <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                    <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+                                        <strong>Action:</strong> Begin immediate preparation of ${serviceName}<br>
+                                        <strong>Priority:</strong> Expedited processing due to technical delay<br>
+                                        <strong>Assignment:</strong> Senior astrologer
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #4caf50; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <div style="position: absolute; top: 15px; right: 15px; background: #4caf50; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 3</div>
+                                <h3 style="margin: 0 0 15px 0; color: #388e3c; font-size: 18px; font-weight: 700;">Expedited Processing</h3>
+                                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                    <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+                                        <strong>Action:</strong> Complete and deliver report within 2 hours<br>
+                                        <strong>Reason:</strong> Compensation for technical delay<br>
+                                        <strong>Quality:</strong> Premium review and validation
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 4 -->
+                            <div style="padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #9c27b0; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <div style="position: absolute; top: 15px; right: 15px; background: #9c27b0; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">STEP 4</div>
+                                <h3 style="margin: 0 0 15px 0; color: #7b1fa2; font-size: 18px; font-weight: 700;">Customer Relations Recovery</h3>
+                                <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                    <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+                                        <strong>Action:</strong> Personal call to apologize for technical delay<br>
+                                        <strong>Objective:</strong> Ensure customer satisfaction and trust recovery<br>
+                                        <strong>Compensation:</strong> Consider service upgrade or discount
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Incident Tracking -->
+                    <div style="background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); padding: 25px; border-radius: 12px; border: 2px solid #bdbdbd;">
+                        <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 700; text-align: center;">Incident Tracking Dashboard</h3>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background: linear-gradient(135deg, #607d8b 0%, #455a64 100%);">
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Tracking Field</td>
+                                    <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Information</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident Timestamp:</td>
+                                    <td style="padding: 15px 20px; color: #d32f2f; font-weight: 600; font-family: 'Courier New', monospace;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Source Platform:</td>
+                                    <td style="padding: 15px 20px; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Customer Contact:</td>
+                                    <td style="padding: 15px 20px; color: #1976d2; font-weight: 600;">${email}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident Classification:</td>
+                                    <td style="padding: 15px 20px; color: #d32f2f; font-weight: 700; text-transform: uppercase;">CRITICAL - PAID CUSTOMER</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Expected Resolution:</td>
+                                    <td style="padding: 15px 20px; color: #2e7d32; font-weight: 600;">Within 2 hours</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Incident ID:</td>
+                                    <td style="padding: 15px 20px; color: #424242; font-family: 'Courier New', monospace; font-weight: 600;">${paymentDetails?.orderId || generateRequestId()}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 40px 30px; text-align: center; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #ff9800, #ff5722);"></div>
+                    <h3 style="margin: 0 0 15px 0; font-size: 22px; font-weight: 700; letter-spacing: 1px;">SriAstroVeda</h3>
+                    <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Technical Alert & Incident Management System</p>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                        <p style="margin: 0; font-size: 14px; opacity: 0.8;">This critical alert requires immediate attention and manual intervention</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 40px 30px; text-align: center; position: relative;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #ff9800, #ff5722);"></div>
-                <h3 style="margin: 0 0 15px 0; font-size: 22px; font-weight: 700; letter-spacing: 1px;">SriAstroVeda</h3>
-                <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Technical Alert & Incident Management System</p>
-                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
-                    <p style="margin: 0; font-size: 14px; opacity: 0.8;">This critical alert requires immediate attention and manual intervention</p>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>`;
+        </body>
+        </html>
+    `;
 
     const emailSubject = `CRITICAL ALERT - Payment Successful, Processing Failed - ${name} - Order: ${paymentDetails?.orderId || 'N/A'}`;
 
@@ -1837,7 +1296,7 @@ app.post("/abandoned-payment-email", async (req, res) => {
         </body>
         </html>`;
 
-    const emailSubject = `PAYMENT ABANDONMENT ALERT - ${name} - ₹599 - High Priority Lead Recovery Required`;
+    const emailSubject = `PAYMENT ABANDONMENT ALERT - ${name} - High Priority Lead Recovery Required`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -1852,13 +1311,51 @@ app.post("/abandoned-payment-email", async (req, res) => {
     console.log(`Abandoned payment notification sent for potential customer: ${name}`);
     
     res.status(200).json({ 
-      success: true, 
-      message: "Abandoned payment notification sent successfully!",
-      customerName: name,
-      customerEmail: email,
-      followUpRequired: true,
-      leadId: generateRequestId()
+        success: true, 
+        message: "Abandoned payment notification sent successfully!",
+        customerName: name,
+        customerEmail: email,
+        followUpRequired: true,
+        leadId: generateRequestId()
     });
+
+    try {
+      let recipient = (phone || "").replace(/[\s\-\+]/g, "");
+      if (recipient && !recipient.startsWith("91")) {
+        recipient = "91" + recipient;
+      }
+      console.log("Sending WhatsApp to:", recipient || "N/A");
+
+        const whatsappPayload = {
+            to: recipient,
+            type: "template",
+            callback_data: "order_confirmation_sent",
+            template: {
+            id: "1428443978411392",
+            header_media_url: headerMediaUrl || "https://sriastroveda.com/logo192.png",
+            body_text_variables: `${name}`
+            }
+        };
+
+      const whatsappResponse = await axios.post(
+        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
+        whatsappPayload,
+        {
+          headers: {
+            "x-api-key": process.env.CAMPH_API_KEY,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      console.log("WhatsApp sent successfully:", whatsappResponse.data);
+    } catch (whatsappError) {
+      console.error("WhatsApp Error Details:");
+      console.error("Status:", whatsappError.response?.status);
+      console.error("Error Data:", whatsappError.response?.data);
+      console.error("Request URL:", whatsappError.config?.url);
+      console.error("Request Payload:", whatsappError.config?.data);
+    }
 
   } catch (error) {
     console.error("Error processing abandoned payment email:", error);
@@ -2301,7 +1798,6 @@ app.post("/send-match-horoscope", async (req, res) => {
 
     /* ---------- recipients ---------- */
     const adminEmail = "israelitesshopping171@gmail.com";
-    const ccEmail = "customercareproductcenter@gmail.com"; // used in response metadata and customer CC
 
     // Helper function to generate request ID
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
@@ -2535,7 +2031,7 @@ app.post("/send-match-horoscope", async (req, res) => {
     /* ================  CUSTOMER EMAIL HTML TEMPLATE  ================ */
     let customerEmailHTML;
     if (customerEmail) {
-      customerEmailHTML = `
+        customerEmailHTML = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -2695,7 +2191,8 @@ app.post("/send-match-horoscope", async (req, res) => {
                 </div>
             </div>
         </body>
-        </html>`;
+        </html>
+        `;
     }
 
     const adminSubject = isPaidService 
@@ -2744,7 +2241,6 @@ app.post("/send-match-horoscope", async (req, res) => {
         emailsSent: {
           adminEmail: adminEmail,
           customerEmail: customerEmail,
-          ccEmails: [ccEmail]
         }
       })
     });
@@ -2759,9 +2255,8 @@ app.post("/send-match-horoscope", async (req, res) => {
   }
 });
 
-
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
