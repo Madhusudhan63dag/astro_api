@@ -947,22 +947,551 @@ app.post("/pending-payment-email", async (req, res) => {
 });
 
 // New API for abandoned payment notifications
+// app.post("/abandoned-payment-email", async (req, res) => {
+//   try {
+//     console.log('Abandoned payment email request received:', JSON.stringify(req.body, null, 2));
+    
+//     const { 
+//       name, 
+//       email, 
+//       phone, 
+//       service, 
+//       birthDetails,
+//       language = 'English',
+//       abandonmentReason,
+//       sessionData
+//     } = req.body;
+
+//     // Validate required fields
+//     if (!name || !email || !phone) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Name, email, and phone are required fields"
+//       });
+//     }
+
+//     const serviceMap = {
+//       'numerology': 'Numerology Reading',
+//       'nakshatra': 'Nakshatra Reading',
+//       'Dasha-period': 'Dasha Period Reading',
+//       'ascendant-analysis': 'Ascendant Analysis',
+//       'your-life': 'Your Life Path Reading',
+//       'personalized': 'Personalized Astrology Report',
+//       'year-analysis': 'Year Analysis',
+//       'daily-horoscope': 'Daily Horoscope',
+//       'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
+//       'career-guidance': 'Career Guidance',
+//       'birth-chart': 'Birth Chart Generation',
+//       'horoscope': 'Horoscope Reading',
+//       'nature-analysis': 'Nature Analysis',
+//       'health-index': 'Health Index',
+//       'lal-kitab': 'Lal Kitab Analysis',
+//       'sade-sati-life': 'Sade Sati Life Analysis',
+//       'gemstone-consultation': 'Gemstone Consultation',
+//       'love-report': 'Love Report',
+//       'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
+//       'kundli': 'Kundli Analysis 200+ Pages',
+
+//     };
+    
+//     const adminEmail = "israelitesshopping171@gmail.com";
+//     const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
+
+//     // Helper function to generate request ID
+//     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
+
+//     // **ABANDONED PAYMENT ALERT HTML TEMPLATE**
+//     const abandonedPaymentHTML = `
+//         <!DOCTYPE html>
+//         <html>
+//         <head>
+//             <meta charset="utf-8">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>Payment Abandonment Alert - High Priority Lead</title>
+//             <style>
+//                 @media only screen and (max-width: 600px) {
+//                     .container { width: 100% !important; }
+//                     .content { padding: 20px !important; }
+//                     .header-text { font-size: 24px !important; }
+//                     .section-title { font-size: 18px !important; }
+//                     table td { padding: 8px 0 !important; }
+//                 }
+//             </style>
+//         </head>
+//         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; line-height: 1.6;">
+//             <div class="container" style="max-width: 800px; margin: 0 auto; background-color: white; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+                
+//                 <!-- Alert Header -->
+//                 <div style="background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%); padding: 40px 30px; text-align: center; position: relative; overflow: hidden;">
+//                     <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #ff9800, #ff5722); animation: pulse 2s infinite;"></div>
+//                     <h1 class="header-text" style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+//                         PAYMENT ABANDONMENT ALERT
+//                     </h1>
+//                     <p style="color: #fff3e0; margin: 20px 0 0 0; font-size: 18px; font-weight: 500; opacity: 0.95;">High-Intent Customer - Immediate Follow-up Required</p>
+//                     <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
+//                         <p style="color: white; margin: 0; font-size: 16px; font-weight: 600;">CONVERSION OPPORTUNITY DETECTED</p>
+//                     </div>
+//                 </div>
+
+//                 <!-- Status Indicators -->
+//                 <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%); color: #e65100; padding: 25px; text-align: center; position: relative;">
+//                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 20px;">
+//                         <div style="background: rgba(230, 81, 0, 0.1); padding: 10px 20px; border-radius: 25px; border: 2px solid #ff8f00;">
+//                             <span style="font-weight: 700; font-size: 14px;">LEAD STATUS: WARM</span>
+//                         </div>
+//                         <div style="background: rgba(230, 81, 0, 0.1); padding: 10px 20px; border-radius: 25px; border: 2px solid #ff8f00;">
+//                             <span style="font-weight: 700; font-size: 14px;">PRIORITY: HIGH</span>
+//                         </div>
+//                         <div style="background: rgba(230, 81, 0, 0.1); padding: 10px 20px; border-radius: 25px; border: 2px solid #ff8f00;">
+//                             <span style="font-weight: 700; font-size: 14px;">ACTION: IMMEDIATE</span>
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 <!-- Abandonment Summary -->
+//                 <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 30%, #fff8e1 100%); padding: 30px; margin: 0; border-left: 8px solid #ff8f00; position: relative;">
+//                     <div style="position: absolute; top: 15px; right: 15px; background: #ff8f00; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;">HIGH POTENTIAL</div>
+//                     <h2 class="section-title" style="color: #e65100; margin: 0 0 20px 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Abandonment Analysis</h2>
+//                     <div style="background: rgba(255,255,255,0.95); padding: 25px; border-radius: 12px; border: 1px solid #ffb74d; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//                         <div style="display: grid; gap: 15px;">
+//                             <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #ff5722; border-radius: 0 8px 8px 0;">
+//                                 <strong style="color: #d84315; font-size: 16px;">Customer Behavior:</strong>
+//                                 <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Customer completed entire service form and reached payment gateway but abandoned transaction</p>
+//                             </div>
+//                             <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #ff9800; border-radius: 0 8px 8px 0;">
+//                                 <strong style="color: #f57c00; font-size: 16px;">Intent Level:</strong>
+//                                 <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">High - Customer invested time to provide complete birth details and personal information</p>
+//                             </div>
+//                             <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #4caf50; border-radius: 0 8px 8px 0;">
+//                                 <strong style="color: #388e3c; font-size: 16px;">Recovery Potential:</strong>
+//                                 <p style="margin: 8px 0 0 0; color: #424242; line-height: 1.6;">Excellent - Customer showed genuine interest and can be converted with proper follow-up</p>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 <!-- Customer Information Dashboard -->
+//                 <div class="content" style="padding: 40px 30px;">
+                    
+//                     <!-- Lead Profile -->
+//                     <div style="background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 30%, #e8eaf6 100%); border: 2px solid #3f51b5; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; overflow: hidden;">
+//                         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3f51b5, #5c6bc0, #7986cb, #5c6bc0, #3f51b5);"></div>
+//                         <h2 style="color: #283593; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Qualified Lead Profile</h2>
+//                         <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+//                             <table style="width: 100%; border-collapse: collapse;">
+//                                 <tr style="background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);">
+//                                     <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Field</td>
+//                                     <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Customer Information</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #c5cae9;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Full Name:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500; font-size: 16px;">${name}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #c5cae9;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Email Address:</td>
+//                                     <td style="padding: 18px 20px; color: #3f51b5; font-weight: 600; font-size: 15px; word-break: break-all;">${email}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #c5cae9;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Phone Number:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-family: 'Courier New', monospace; font-size: 16px; font-weight: 600;">${phone}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #c5cae9;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Service Interest:</td>
+//                                     <td style="padding: 18px 20px; color: #3f51b5; font-weight: 700; font-size: 16px;">${serviceName}</td>
+//                                 </tr>
+//                                 <tr>
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Language Preference:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${language}</td>
+//                                 </tr>
+//                             </table>
+//                         </div>
+//                     </div>
+
+//                     ${birthDetails ? `
+//                     <!-- Birth Details Provided -->
+//                     <div style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 30%, #f3e5f5 100%); border: 2px solid #9c27b0; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative;">
+//                         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #9c27b0, #ba68c8, #ce93d8, #ba68c8, #9c27b0);"></div>
+//                         <h2 style="color: #6a1b9a; margin: 0 0 25px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Birth Details Provided</h2>
+//                         <div style="background: rgba(255,255,255,0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+//                             <div style="background: #9c27b0; color: white; padding: 15px 20px; text-align: center;">
+//                                 <p style="margin: 0; font-weight: 600; font-size: 14px;">CUSTOMER INVESTMENT LEVEL: HIGH</p>
+//                             </div>
+//                             <table style="width: 100%; border-collapse: collapse;">
+//                                 <tr style="border-bottom: 1px solid #e1bee7;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa; width: 40%;">Date of Birth:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.dateOfBirth || 'Not provided'}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e1bee7;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Time of Birth:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.timeOfBirth || 'Not provided'}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e1bee7;">
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Place of Birth:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.placeOfBirth || 'Not provided'}</td>
+//                                 </tr>
+//                                 <tr>
+//                                     <td style="padding: 18px 20px; font-weight: 600; color: #37474f; background: #fafafa;">Gender:</td>
+//                                     <td style="padding: 18px 20px; color: #424242; font-weight: 500;">${birthDetails.gender || 'Not specified'}</td>
+//                                 </tr>
+//                             </table>
+//                         </div>
+//                     </div>
+//                     ` : ''}
+
+//                     <!-- Abandonment Analysis -->
+//                     <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 30%, #ffebee 100%); border: 3px solid #f44336; border-radius: 16px; padding: 30px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(244, 67, 54, 0.2);">
+//                         <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f44336, #e91e63, #9c27b0, #e91e63, #f44336);"></div>
+//                         <div style="text-align: center; margin-bottom: 25px;">
+//                             <h2 style="color: #c62828; margin: 0; font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Transaction Analysis</h2>
+//                             <div style="background: #f44336; color: white; display: inline-block; padding: 8px 20px; border-radius: 20px; margin-top: 10px; font-weight: 600; font-size: 14px;">ABANDONMENT DETECTED</div>
+//                         </div>
+//                         <div style="background: rgba(255,255,255,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
+//                             <table style="width: 100%; border-collapse: collapse;">
+//                                 <tr style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);">
+//                                     <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Transaction Field</td>
+//                                     <td style="padding: 20px; font-weight: 700; color: white; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Status Information</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #ffcdd2;">
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Service Amount:</td>
+//                                     <td style="padding: 20px; color: #2e7d32; font-weight: 700; font-size: 20px;">₹599</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #ffcdd2;">
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Form Completion:</td>
+//                                     <td style="padding: 20px; color: #4caf50; font-weight: 700; text-transform: uppercase;">COMPLETE</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #ffcdd2;">
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Payment Status:</td>
+//                                     <td style="padding: 20px; color: #f44336; font-weight: 700; text-transform: uppercase;">ABANDONED</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #ffcdd2;">
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Abandonment Reason:</td>
+//                                     <td style="padding: 20px; color: #424242; font-weight: 500;">${abandonmentReason || 'User cancelled/closed payment gateway'}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #ffcdd2;">
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Session Duration:</td>
+//                                     <td style="padding: 20px; color: #424242; font-weight: 500;">${sessionData?.timeOnPage || 'Data not available'}</td>
+//                                 </tr>
+//                                 <tr>
+//                                     <td style="padding: 20px; font-weight: 600; color: #c62828; background: #fafafa;">Conversion Potential:</td>
+//                                     <td style="padding: 20px; color: #ff9800; font-weight: 700; text-transform: uppercase;">HIGH - IMMEDIATE FOLLOW-UP</td>
+//                                 </tr>
+//                             </table>
+//                         </div>
+//                     </div>
+
+//                     <!-- Recovery Strategy -->
+//                     <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 30%, #e8f5e8 100%); border: 4px solid #4caf50; border-radius: 16px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2);">
+//                         <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #4caf50, #8bc34a, #cddc39, #8bc34a, #4caf50);"></div>
+//                         <h2 style="color: #1b5e20; margin: 0 0 30px 0; font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; text-align: center;">Lead Recovery Protocol</h2>
+//                         <div style="background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; border: 1px solid #81c784; box-shadow: 0 6px 24px rgba(0,0,0,0.1);">
+                            
+//                             <!-- Recovery Step 1 -->
+//                             <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #f44336; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//                                 <div style="position: absolute; top: 15px; right: 15px; background: #f44336; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">URGENT - 1 HOUR</div>
+//                                 <h3 style="margin: 0 0 15px 0; color: #c62828; font-size: 18px; font-weight: 700;">Immediate Phone Contact</h3>
+//                                 <div style="background: #ffebee; padding: 15px; border-radius: 8px; margin-top: 10px;">
+//                                     <p style="margin: 0 0 10px 0; color: #424242; font-size: 15px; line-height: 1.6;">
+//                                         <strong>Action:</strong> Call customer within 1 hour<br>
+//                                         <strong>Contact:</strong> <span style="color: #c62828; font-weight: 700; font-family: 'Courier New', monospace;">${phone}</span><br>
+//                                         <strong>Approach:</strong> Friendly concern about technical issues
+//                                     </p>
+//                                     <div style="background: rgba(255,255,255,0.8); padding: 12px; border-radius: 6px; border-left: 3px solid #f44336;">
+//                                         <strong style="color: #c62828;">Script:</strong> "Hi ${name}, I noticed you were interested in your ${serviceName.toLowerCase()} but encountered an issue during payment. We'd love to help you complete your consultation. Was there a technical problem we can resolve?"
+//                                     </div>
+//                                 </div>
+//                             </div>
+
+//                             <!-- Recovery Step 2 -->
+//                             <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #ff9800; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//                                 <div style="position: absolute; top: 15px; right: 15px; background: #ff9800; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">2-4 HOURS</div>
+//                                 <h3 style="margin: 0 0 15px 0; color: #f57c00; font-size: 18px; font-weight: 700;">Email Follow-up Campaign</h3>
+//                                 <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-top: 10px;">
+//                                     <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+//                                         <strong>Action:</strong> Send personalized follow-up email<br>
+//                                         <strong>Recipient:</strong> <span style="color: #f57c00; font-weight: 600;">${email}</span><br>
+//                                         <strong>Content:</strong> Address potential concerns and offer assistance<br>
+//                                         <strong>Include:</strong> Payment security information and customer testimonials
+//                                     </p>
+//                                 </div>
+//                             </div>
+
+//                             <!-- Recovery Step 3 -->
+//                             <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #4caf50; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//                                 <div style="position: absolute; top: 15px; right: 15px; background: #4caf50; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">DAY 1</div>
+//                                 <h3 style="margin: 0 0 15px 0; color: #388e3c; font-size: 18px; font-weight: 700;">WhatsApp Engagement</h3>
+//                                 <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 10px;">
+//                                     <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+//                                         <strong>Platform:</strong> WhatsApp Business<br>
+//                                         <strong>Message:</strong> Casual, helpful approach with special offer<br>
+//                                         <strong>Incentive:</strong> Limited-time discount or free consultation call<br>
+//                                         <strong>Timing:</strong> If phone and email attempts unsuccessful
+//                                     </p>
+//                                 </div>
+//                             </div>
+
+//                             <!-- Recovery Step 4 -->
+//                             <div style="padding: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-left: 6px solid #9c27b0; border-radius: 0 12px 12px 0; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//                                 <div style="position: absolute; top: 15px; right: 15px; background: #9c27b0; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">DAY 3</div>
+//                                 <h3 style="margin: 0 0 15px 0; color: #7b1fa2; font-size: 18px; font-weight: 700;">Value-Added Approach</h3>
+//                                 <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin-top: 10px;">
+//                                     <p style="margin: 0; color: #424242; font-size: 15px; line-height: 1.6;">
+//                                         <strong>Strategy:</strong> Provide free mini-insight based on birth details<br>
+//                                         <strong>Goal:</strong> Demonstrate value and expertise<br>
+//                                         <strong>Conversion:</strong> Use insight to encourage full consultation<br>
+//                                         <strong>Final Offer:</strong> Time-sensitive discount or payment plan option
+//                                     </p>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     <!-- Performance Tracking -->
+//                     <div style="background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); padding: 25px; border-radius: 12px; border: 2px solid #bdbdbd;">
+//                         <h3 style="color: #37474f; margin: 0 0 20px 0; font-size: 20px; font-weight: 700; text-align: center;">Lead Tracking Dashboard</h3>
+//                         <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+//                             <table style="width: 100%; border-collapse: collapse;">
+//                                 <tr style="background: linear-gradient(135deg, #607d8b 0%, #455a64 100%);">
+//                                     <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Tracking Parameter</td>
+//                                     <td style="padding: 15px 20px; font-weight: 700; color: white; font-size: 14px;">Value</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e0e0e0;">
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Abandonment Time:</td>
+//                                     <td style="padding: 15px 20px; color: #ff6f00; font-weight: 600; font-family: 'Courier New', monospace;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e0e0e0;">
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Lead Source:</td>
+//                                     <td style="padding: 15px 20px; color: #37474f; font-weight: 500;">SriAstroVeda Official Website</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e0e0e0;">
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Customer Contact:</td>
+//                                     <td style="padding: 15px 20px; color: #1976d2; font-weight: 600;">${email}</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e0e0e0;">
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Lead Quality:</td>
+//                                     <td style="padding: 15px 20px; color: #4caf50; font-weight: 700; text-transform: uppercase;">HIGH INTENT - QUALIFIED</td>
+//                                 </tr>
+//                                 <tr style="border-bottom: 1px solid #e0e0e0;">
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Follow-up Priority:</td>
+//                                     <td style="padding: 15px 20px; color: #f44336; font-weight: 600;">IMMEDIATE - WITHIN 1 HOUR</td>
+//                                 </tr>
+//                                 <tr>
+//                                     <td style="padding: 15px 20px; color: #616161; font-weight: 600; background: #fafafa;">Lead ID:</td>
+//                                     <td style="padding: 15px 20px; color: #424242; font-family: 'Courier New', monospace; font-weight: 600;">${generateRequestId()}</td>
+//                                 </tr>
+//                             </table>
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 <!-- Footer -->
+//                 <div style="background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; padding: 40px 30px; text-align: center; position: relative;">
+//                     <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6f00, #ff8f00, #ffa000, #ff8f00, #ff6f00);"></div>
+//                     <h3 style="margin: 0 0 15px 0; font-size: 22px; font-weight: 700; letter-spacing: 1px;">SriAstroVeda</h3>
+//                     <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Customer Recovery & Lead Management System</p>
+//                     <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
+//                         <p style="margin: 0; font-size: 14px; opacity: 0.8;">Quick follow-up can convert this high-intent lead into a paying customer</p>
+//                     </div>
+//                 </div>
+//             </div>
+//         </body>
+//         </html>`;
+
+//     const emailSubject = `PAYMENT ABANDONMENT ALERT - ${name} - High Priority Lead Recovery Required`;
+
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: adminEmail,
+//       subject: emailSubject,
+//       html: abandonedPaymentHTML,
+//       replyTo: email
+//     }; 
+
+//     await transporter.sendMail(mailOptions);
+    
+//     console.log(`Abandoned payment notification sent for potential customer: ${name}`);
+    
+//     res.status(200).json({ 
+//         success: true, 
+//         message: "Abandoned payment notification sent successfully!",
+//         customerName: name,
+//         customerEmail: email,
+//         followUpRequired: true,
+//         leadId: generateRequestId()
+//     });
+
+//   } catch (error) {
+//     console.error("Error processing abandoned payment email:", error);
+//     res.status(500).json({ 
+//       success: false, 
+//       message: "Failed to send abandoned payment notification!", 
+//       error: error.message 
+//     });
+//   }
+// });
+
+// top of file
+
+// At top of file
+
+function assertEnv(name) {
+  if (!process.env[name]) throw new Error(`Missing env: ${name}`);
+}
+
+function buildWhatstoolUrl() {
+  assertEnv("WHATSAPP_API_NO");
+  return `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`;
+}
+
+function buildHeaders() {
+  assertEnv("CAMPH_API_KEY");
+  return { "x-api-key": process.env.CAMPH_API_KEY, "Content-Type": "application/json" };
+}
+
+function sanitizePhoneE164IN(raw) {
+  let p = (raw || "").replace(/[\s\-\+]/g, "");
+  if (p && !p.startsWith("91")) p = "91" + p; // keep your existing India fallback
+  return p;
+}
+
+// Simple payload (mimics the working /send-astro-email route)
+function buildSimpleTemplatePayload({ to, templateId, headerMediaUrl, bodyVarsArray }) {
+  return {
+    to,
+    type: "template",
+    callback_data: "order_confirmation_sent",
+    template: {
+      id: templateId,
+      header_media_url: headerMediaUrl || "https://camphairr.com/logo192.png",
+      body_text_variables: (bodyVarsArray || []).join("|")
+    }
+  };
+}
+
+// Components payload (matches WhatsApp template components schema)
+function buildComponentsTemplatePayload({
+  to,
+  templateId,
+  namespace,
+  languageCode,
+  templateName,
+  headerMediaUrl,
+  bodyVarsArray
+    }) {
+    return {
+        to,
+        type: "template",
+        template: {
+        id: templateId,
+        namespace,
+        language: { code: languageCode || "en" },
+        name: templateName,
+        components: [
+            {
+            type: "header",
+            parameters: [
+                { type: "image", image: { link: headerMediaUrl || "https://camphairr.com/logo192.png" } }
+            ]
+            },
+            {
+            type: "body",
+            parameters: (bodyVarsArray || []).map((text) => ({ type: "text", text }))
+            }
+        ]
+        }
+    };
+}
+
+async function sendWhatsappWithFallback({
+    phone,
+    headerMediaUrl,
+    nameVar,
+    // astro_abandoned template meta from your provider
+    templateId = "1428443978411392",
+    namespace = "be8b74d7_759c_4156_99cc_879b559bc47b",
+    languageCode = "en",
+    templateName = "astro_abandoned"
+    }) {
+  const endpoint = buildWhatstoolUrl();
+  const headers = buildHeaders();
+  const to = sanitizePhoneE164IN(phone);
+
+  // First try the “simple” payload style (id + header_media_url + body_text_variables) since it works in your other route
+  const simplePayload = buildSimpleTemplatePayload({
+    to,
+    templateId,
+    headerMediaUrl,
+    bodyVarsArray: [nameVar || "Customer"] // maps to {{1}}
+  });
+
+  console.log("[WA] Endpoint:", endpoint);
+  console.log("[WA] To:", to);
+  console.log("[WA] Try SIMPLE payload with templateId:", templateId, "body_vars_count:", 1);
+
+  try {
+    const resp = await axios.post(endpoint, simplePayload, { headers, timeout: 15000 });
+    console.log("[WA] SIMPLE send success:", resp.data);
+    return { attempted: true, mode: "simple", status: "sent", data: resp.data };
+  } catch (err) {
+    console.error("[WA] SIMPLE send failed:", err?.message, err?.code);
+    // If the provider rejects the simple schema, fall back to Meta-style components schema
+  }
+
+  const componentsPayload = buildComponentsTemplatePayload({
+    to,
+    templateId,
+    namespace,
+    languageCode,
+    templateName,
+    headerMediaUrl,
+    bodyVarsArray: [nameVar || "Customer"]
+  });
+
+  console.log("[WA] Try COMPONENTS payload:", {
+    id: templateId,
+    ns: namespace,
+    lang: languageCode,
+    name: templateName
+  });
+
+  try {
+    const resp = await axios.post(endpoint, componentsPayload, { headers, timeout: 15000 });
+    console.log("[WA] COMPONENTS send success:", resp.data);
+    return { attempted: true, mode: "components", status: "sent", data: resp.data };
+  } catch (err) {
+    console.error("[WA] COMPONENTS send failed");
+    console.error("[WA] Axios error message:", err?.message);
+    console.error("[WA] Axios error code:", err?.code);
+    console.error("[WA] Request URL (config):", err?.config?.url);
+    if (err?.response) {
+      console.error("[WA] Response status:", err.response.status);
+      console.error("[WA] Response data:", err.response.data);
+    } else if (err?.request) {
+      console.error("[WA] No response received (network/TLS/CORS or server unreachable).");
+    }
+    return {
+      attempted: true,
+      mode: "components",
+      status: "failed",
+      error: err?.response?.data || err?.message || "Unknown error"
+    };
+  }
+}
+
 app.post("/abandoned-payment-email", async (req, res) => {
   try {
-    console.log('Abandoned payment email request received:', JSON.stringify(req.body, null, 2));
-    
-    const { 
-      name, 
-      email, 
-      phone, 
-      service, 
+    console.log("Abandoned payment email request received:", JSON.stringify(req.body, null, 2));
+
+    const {
+      name,
+      email,
+      phone,
+      service,
       birthDetails,
-      language = 'English',
+      language = "English",
       abandonmentReason,
       sessionData
     } = req.body;
 
-    // Validate required fields
     if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
@@ -971,36 +1500,32 @@ app.post("/abandoned-payment-email", async (req, res) => {
     }
 
     const serviceMap = {
-      'numerology': 'Numerology Reading',
-      'nakshatra': 'Nakshatra Reading',
-      'Dasha-period': 'Dasha Period Reading',
-      'ascendant-analysis': 'Ascendant Analysis',
-      'your-life': 'Your Life Path Reading',
-      'personalized': 'Personalized Astrology Report',
-      'year-analysis': 'Year Analysis',
-      'daily-horoscope': 'Daily Horoscope',
-      'are-we-compatible-for-marriage': 'Are We Compatible for Marriage',
-      'career-guidance': 'Career Guidance',
-      'birth-chart': 'Birth Chart Generation',
-      'horoscope': 'Horoscope Reading',
-      'nature-analysis': 'Nature Analysis',
-      'health-index': 'Health Index',
-      'lal-kitab': 'Lal Kitab Analysis',
-      'sade-sati-life': 'Sade Sati Life Analysis',
-      'gemstone-consultation': 'Gemstone Consultation',
-      'love-report': 'Love Report',
-      'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-      'kundli': 'Kundli Analysis 200+ Pages',
-
+      "numerology": "Numerology Reading",
+      "nakshatra": "Nakshatra Reading",
+      "Dasha-period": "Dasha Period Reading",
+      "ascendant-analysis": "Ascendant Analysis",
+      "your-life": "Your Life Path Reading",
+      "personalized": "Personalized Astrology Report",
+      "year-analysis": "Year Analysis",
+      "daily-horoscope": "Daily Horoscope",
+      "are-we-compatible-for-marriage": "Are We Compatible for Marriage",
+      "career-guidance": "Career Guidance",
+      "birth-chart": "Birth Chart Generation",
+      "horoscope": "Horoscope Reading",
+      "nature-analysis": "Nature Analysis",
+      "health-index": "Health Index",
+      "lal-kitab": "Lal Kitab Analysis",
+      "sade-sati-life": "Sade Sati Life Analysis",
+      "gemstone-consultation": "Gemstone Consultation",
+      "love-report": "Love Report",
+      "PersonalizedReport2025": "Personalized Astrology Report for 2025",
+      "kundli": "Kundli Analysis 200+ Pages"
     };
-    
-    const adminEmail = "israelitesshopping171@gmail.com";
-    const serviceName = serviceMap[service] || service || 'General Astrology Consultation';
 
-    // Helper function to generate request ID
+    const adminEmail = "israelitesshopping171@gmail.com";
+    const serviceName = serviceMap[service] || service || "General Astrology Consultation";
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
 
-    // **ABANDONED PAYMENT ALERT HTML TEMPLATE**
     const abandonedPaymentHTML = `
         <!DOCTYPE html>
         <html>
@@ -1294,78 +1819,60 @@ app.post("/abandoned-payment-email", async (req, res) => {
                 </div>
             </div>
         </body>
-        </html>`;
+        </html>
+    `;
 
     const emailSubject = `PAYMENT ABANDONMENT ALERT - ${name} - High Priority Lead Recovery Required`;
-
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: adminEmail,
       subject: emailSubject,
       html: abandonedPaymentHTML,
       replyTo: email
-    }; 
+    };
 
+    // Send admin email
     await transporter.sendMail(mailOptions);
-    
     console.log(`Abandoned payment notification sent for potential customer: ${name}`);
-    
-    res.status(200).json({ 
-        success: true, 
-        message: "Abandoned payment notification sent successfully!",
-        customerName: name,
-        customerEmail: email,
-        followUpRequired: true,
-        leadId: generateRequestId()
-    });
 
+    // WhatsApp send using astro_abandoned template with header image + {{1}} body variable
+    const headerMediaUrl = "https://www.sriastroveda.com/logo192.png"; // replace if you have a branded header
+    const resolvedName = name?.trim() || "Customer";
+
+    let whatsapp = { attempted: false };
     try {
-      let recipient = (phone || "").replace(/[\s\-\+]/g, "");
-      if (recipient && !recipient.startsWith("91")) {
-        recipient = "91" + recipient;
-      }
-      console.log("Sending WhatsApp to:", recipient || "N/A");
-
-        const whatsappPayload = {
-            to: recipient,
-            type: "template",
-            callback_data: "order_confirmation_sent",
-            template: {
-            id: "1428443978411392",
-            header_media_url: headerMediaUrl || "https://sriastroveda.com/logo192.png",
-            body_text_variables: `${name}`
-            }
-        };
-
-      const whatsappResponse = await axios.post(
-        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
-        whatsappPayload,
-        {
-          headers: {
-            "x-api-key": process.env.CAMPH_API_KEY,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      console.log("WhatsApp sent successfully:", whatsappResponse.data);
-    } catch (whatsappError) {
-      console.error("WhatsApp Error Details:");
-      console.error("Status:", whatsappError.response?.status);
-      console.error("Error Data:", whatsappError.response?.data);
-      console.error("Request URL:", whatsappError.config?.url);
-      console.error("Request Payload:", whatsappError.config?.data);
+      whatsapp = await sendWhatsappWithFallback({
+        phone,
+        headerMediaUrl,
+        nameVar: resolvedName,
+        templateId: "1428443978411392",
+        namespace: "be8b74d7_759c_4156_99cc_879b559bc47b",
+        languageCode: "en",
+        templateName: "astro_abandoned"
+      });
+    } catch (_) {
+      // already logged inside sendWhatsappWithFallback
     }
 
+    return res.status(200).json({
+      success: true,
+      message: "Abandoned payment notification email sent; WhatsApp attempted.",
+      customerName: name,
+      customerEmail: email,
+      followUpRequired: true,
+      leadId: generateRequestId(),
+      whatsapp
+    });
   } catch (error) {
     console.error("Error processing abandoned payment email:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Failed to send abandoned payment notification!", 
-      error: error.message 
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send abandoned payment notification!",
+      error: error.message
     });
   }
 });
+
 
 // NEW: Abandoned Match Email API
 app.post("/abandoned-match-email", async (req, res) => {
