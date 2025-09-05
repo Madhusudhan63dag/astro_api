@@ -12,6 +12,7 @@ const OTP_EXPIRY_MS = 5 * 60 * 1000;
 const PORT = process.env.PORT || 5000;
 
 
+
 // Handle fetch import based on Node.js version
 let fetch;
 try {
@@ -1361,7 +1362,7 @@ function buildSimpleTemplatePayload({ to, templateId, headerMediaUrl, bodyVarsAr
     callback_data: "order_confirmation_sent",
     template: {
       id: templateId,
-      header_media_url: headerMediaUrl || "https://camphairr.com/logo192.png",
+    //   header_media_url: headerMediaUrl || "https://camphairr.com/logo192.png",
       body_text_variables: (bodyVarsArray || []).join("|")
     }
   };
@@ -1374,7 +1375,7 @@ function buildComponentsTemplatePayload({
   namespace,
   languageCode,
   templateName,
-  headerMediaUrl,
+//   headerMediaUrl,
   bodyVarsArray
     }) {
     return {
@@ -1388,9 +1389,9 @@ function buildComponentsTemplatePayload({
         components: [
             {
             type: "header",
-            parameters: [
-                { type: "image", image: { link: headerMediaUrl || "https://camphairr.com/logo192.png" } }
-            ]
+            // parameters: [
+            //     { type: "image", image: { link: headerMediaUrl || "https://camphairr.com/logo192.png" } }
+            // ]
             },
             {
             type: "body",
@@ -1403,7 +1404,7 @@ function buildComponentsTemplatePayload({
 
 async function sendWhatsappWithFallback({
     phone,
-    headerMediaUrl,
+    // headerMediaUrl,
     nameVar,
     // astro_abandoned template meta from your provider
     templateId = "1428443978411392",
@@ -1419,7 +1420,7 @@ async function sendWhatsappWithFallback({
   const simplePayload = buildSimpleTemplatePayload({
     to,
     templateId,
-    headerMediaUrl,
+    // headerMediaUrl,
     bodyVarsArray: [nameVar || "Customer"] // maps to {{1}}
   });
 
@@ -1442,7 +1443,7 @@ async function sendWhatsappWithFallback({
     namespace,
     languageCode,
     templateName,
-    headerMediaUrl,
+    // headerMediaUrl,
     bodyVarsArray: [nameVar || "Customer"]
   });
 
@@ -1836,14 +1837,14 @@ app.post("/abandoned-payment-email", async (req, res) => {
     console.log(`Abandoned payment notification sent for potential customer: ${name}`);
 
     // WhatsApp send using astro_abandoned template with header image + {{1}} body variable
-    const headerMediaUrl = "https://www.sriastroveda.com/logo192.png"; // replace if you have a branded header
+    // const headerMediaUrl = "https://www.sriastroveda.com/logo192.jpg"; // replace if you have a branded header
     const resolvedName = name?.trim() || "Customer";
 
     let whatsapp = { attempted: false };
     try {
       whatsapp = await sendWhatsappWithFallback({
         phone,
-        headerMediaUrl,
+        // headerMediaUrl,
         nameVar: resolvedName,
         templateId: "1428443978411392",
         namespace: "be8b74d7_759c_4156_99cc_879b559bc47b",
