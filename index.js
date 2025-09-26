@@ -512,7 +512,7 @@ app.post("/send-astro-email", async (req, res) => {
         whatsappPayload,
         {
           headers: {
-            "x-api-key": process.env.CAMPH_API_KEY,
+            "x-api-key": process.env.WHATSAPP_API_KEY,
             "Content-Type": "application/json"
           }
         }
@@ -916,8 +916,8 @@ function buildWhatstoolUrl() {
 }
 
 function buildHeaders() {
-  assertEnv("CAMPH_API_KEY");
-  return { "x-api-key": process.env.CAMPH_API_KEY, "Content-Type": "application/json" };
+  assertEnv("WHATSAPP_API_KEY");
+  return { "x-api-key": process.env.WHATSAPP_API_KEY, "Content-Type": "application/json" };
 }
 
 function sanitizePhoneE164IN(raw) {
@@ -947,7 +947,7 @@ function buildComponentsTemplatePayload({
   namespace,
   languageCode,
   templateName,
-//   headerMediaUrl,
+    //   headerMediaUrl,
   bodyVarsArray
     }) {
     return {
@@ -1446,7 +1446,6 @@ app.post("/abandoned-payment-email", async (req, res) => {
     });
   }
 });
-
 
 // NEW: Abandoned Match Email API
 app.post("/abandoned-match-email", async (req, res) => {
@@ -2337,53 +2336,8 @@ app.post("/send-match-horoscope", async (req, res) => {
 });
 
 
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from Windows Node.js API!" });
-});
 
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
-// src/
-// ├── config/
-// │   ├── database.js
-// │   ├── email.js
-// │   ├── payment.js
-// │   └── index.js
-// ├── controllers/
-// │   ├── emailController.js
-// │   ├── paymentController.js
-// │   ├── astrologyController.js
-// │   └── matchHoroscopeController.js
-// ├── middleware/
-// │   ├── cors.js
-// │   ├── errorHandler.js
-// │   ├── logging.js
-// │   └── validation.js
-// ├── routes/
-// │   ├── emailRoutes.js
-// │   ├── paymentRoutes.js
-// │   ├── astrologyRoutes.js
-// │   └── matchHoroscopeRoutes.js
-// ├── services/
-// │   ├── emailService.js
-// │   ├── paymentService.js
-// │   ├── whatsappService.js
-// │   └── templateService.js
-// ├── utils/
-// │   ├── helpers.js
-// │   ├── constants.js
-// │   └── validators.js
-// ├── templates/
-// │   ├── email/
-// │   │   ├── adminTemplates.js
-// │   │   └── customerTemplates.js
-// │   └── whatsapp/
-// │       └── templates.js
-// ├── app.js
-// └── server.js
