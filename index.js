@@ -544,7 +544,7 @@ app.post("/submit-kundli-form", async (req, res) => {
       });
     }
 
-    const adminEmail = "madhusudhan.daggula@israelitescorp.com";
+    const adminEmail = "israelitesshopping171@gmail.com";
     const requestId = `KDL${Date.now().toString().slice(-8)}`;
 
     // Format the time display for emails
