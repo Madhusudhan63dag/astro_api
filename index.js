@@ -36,8 +36,8 @@ app.use(cors({
     'https://astro-snowy-five.vercel.app',
     'https://sriastroveda.com',
     'https://www.sriastroveda.com',
-    'http://localhost:3000',
-    'http://localhost:3001'
+    'http://localhost:3000/',
+    'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -188,7 +188,6 @@ app.post("/verify-payment", async (req, res) => {
 // Email Sending Route for Astrology Services (Optimized)
 app.post("/send-astro-email", async (req, res) => {
   try {
-    console.log("Astrology Email Request:", JSON.stringify(req.body));
     const {
       name,
       email,
@@ -237,28 +236,8 @@ app.post("/send-astro-email", async (req, res) => {
 
     // Compute friendly name or fall back to raw service string
     const serviceName = serviceMap?.[service] || service || 'Astrology Service';
-
-    console.log('service/raw:', service, 'serviceName/mapped:', serviceName);
     // Helper for requestId fallback
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
-
-    // Presence log (debug)
-    console.log("send-astro-email presence", {
-      name: !!name, email: !!email, phone: !!phone,
-      service: !!service, reportType: !!reportType, language: !!language,
-      birthDetails: birthDetails && {
-        dob: !!birthDetails?.dateOfBirth,
-        tob: !!birthDetails?.timeOfBirth,
-        pob: !!birthDetails?.placeOfBirth,
-        gender: !!birthDetails?.gender
-      },
-      paymentDetails: paymentDetails && {
-        orderId: !!paymentDetails?.orderId,
-        amount: !!paymentDetails?.amount,
-        paymentId: !!paymentDetails?.paymentId,
-        status: !!paymentDetails?.status
-      }
-    });
 
     // SUBJECTS (admin uses raw service/reportType only from frontend)
     const adminSubject = `PAID ${service || "N/A"} - ${name} | ₹${paymentDetails?.amount || "N/A"} Admin Email`;
@@ -461,9 +440,7 @@ app.post("/send-astro-email", async (req, res) => {
         </body>
         </html>
     `;
-
-    
-        // Mail options
+    // Mail options
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: adminEmail,
@@ -492,7 +469,6 @@ app.post("/send-astro-email", async (req, res) => {
       if (recipient && !recipient.startsWith("91")) {
         recipient = "91" + recipient;
       }
-      console.log("Sending WhatsApp to:", recipient || "N/A");
 
       const waOrder = paymentDetails?.orderId || "N/A";
       const waAmount = paymentDetails?.amount || "N/A";
@@ -518,7 +494,6 @@ app.post("/send-astro-email", async (req, res) => {
         }
       );
 
-      console.log("WhatsApp sent successfully:", whatsappResponse.data);
     } catch (whatsappError) {
       console.error("WhatsApp Error Details:");
       console.error("Status:", whatsappError.response?.status);
@@ -544,10 +519,228 @@ app.post("/send-astro-email", async (req, res) => {
   }
 });
 
+
+// NEW API ENDPOINT - Form submission without payment
+app.post("/submit-kundli-form", async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      dateOfBirth,
+      timeOfBirth,
+      time12Hour,      // NEW: 12-hour format time
+      timePeriod,      // NEW: AM or PM
+      placeOfBirth,
+      gender = "male",
+      language = "English"
+    } = req.body;
+
+    // Validation
+    if (!name || !email || !phone || !dateOfBirth || !timeOfBirth || !placeOfBirth) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be filled"
+      });
+    }
+
+    const adminEmail = "madhusudhan.daggula@israelitescorp.com";
+    const requestId = `KDL${Date.now().toString().slice(-8)}`;
+
+    // Format the time display for emails
+    const timeDisplay = time12Hour && timePeriod 
+      ? `${time12Hour} ${timePeriod}` 
+      : timeOfBirth;
+
+    // Admin Email (Plain text format)
+    const adminSubject = `NEW KUNDLI FORM - ${name} - ${requestId}`;
+    const adminEmailHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"><title>Kundli Form Submission</title></head>
+      <body style="font-family:monospace;padding:20px;white-space:pre-wrap;">
+        New Kundli Form Submission
+
+        Request ID: ${requestId}
+        Submitted: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+
+        PERSONAL DETAILS
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone}
+        Gender: ${gender}
+
+        BIRTH DETAILS
+        Date of Birth: ${dateOfBirth}
+        Time of Birth: ${timeDisplay}
+        Time (24-hour): ${timeOfBirth}
+        Place of Birth: ${placeOfBirth}
+        Preferred Language: ${language}
+
+        Status: Pending Service Selection
+      </body>
+      </html>
+    `;
+
+    // Customer Email (Professional format)
+    const customerSubject = `Thank You for Your Kundli Form Submission - ${requestId}`;
+    const customerEmailHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Kundli Form Confirmation</title></head>
+      <body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background-color:#f5f5f5;">
+        <div style="max-width:600px;margin:0 auto;background-color:white;">
+          
+          <!-- Header -->
+          <div style="background:linear-gradient(135deg,#1a237e 0%,#3949ab 100%);padding:40px 30px;text-align:center;">
+            <h1 style="color:white;margin:0;font-size:28px;font-weight:300;letter-spacing:2px;">SriAstroVeda</h1>
+            <p style="color:#c5cae9;margin:10px 0 0 0;font-size:16px;">Premium Astrology Services</p>
+          </div>
+
+          <!-- Success Message -->
+          <div style="background:#4caf50;color:white;padding:20px;text-align:center;">
+            <h2 style="margin:0;font-size:22px;">Form Submitted Successfully</h2>
+          </div>
+
+          <!-- Content -->
+          <div style="padding:40px 30px;">
+            <h2 style="color:#1a237e;font-size:24px;margin:0 0 20px 0;">Dear ${name},</h2>
+            <p style="color:#424242;font-size:16px;line-height:1.7;margin:0 0 20px 0;">
+              Thank you for submitting your details. We have received your information and it has been recorded successfully.
+            </p>
+
+            <!-- Details Box -->
+            <div style="background:#f3e5f5;border-left:4px solid#9c27b0;border-radius:8px;padding:20px;margin:30px 0;">
+              <h3 style="color:#4a148c;margin:0 0 15px 0;font-size:18px;">Your Submission Details</h3>
+              <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid#e1bee7;">
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Reference ID:</td>
+                  <td style="padding:10px 0;color:#4a148c;font-family:monospace;font-weight:600;">${requestId}</td>
+                </tr>
+                <tr style="border-bottom:1px solid#e1bee7;">
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Name:</td>
+                  <td style="padding:10px 0;color:#424242;">${name}</td>
+                </tr>
+                <tr style="border-bottom:1px solid#e1bee7;">
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Email:</td>
+                  <td style="padding:10px 0;color:#424242;">${email}</td>
+                </tr>
+                <tr style="border-bottom:1px solid#e1bee7;">
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Birth Date:</td>
+                  <td style="padding:10px 0;color:#424242;">${dateOfBirth}</td>
+                </tr>
+                <tr style="border-bottom:1px solid#e1bee7;">
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Birth Time:</td>
+                  <td style="padding:10px 0;color:#424242;">${timeDisplay}</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;font-weight:600;color:#37474f;">Birth Place:</td>
+                  <td style="padding:10px 0;color:#424242;">${placeOfBirth}</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Next Steps -->
+            <div style="background:#fff3e0;border-left:4px solid#ff9800;padding:20px;margin:20px 0;border-radius:0 8px 8px 0;">
+              <h3 style="color:#e65100;margin:0 0 15px 0;font-size:18px;">Next Steps</h3>
+              <p style="color:#424242;margin:0;line-height:1.7;">
+                To receive your personalized Kundli report, please visit our services page and select the package that best suits your needs. 
+                Your report will be generated and delivered within 24-48 hours after service selection and payment confirmation.
+              </p>
+            </div>
+
+            <!-- Support -->
+            <div style="text-align:center;padding:25px;background:#f5f5f5;border-radius:8px;margin-top:30px;">
+              <p style="margin:0 0 10px 0;color:#616161;font-size:14px;">Need assistance?</p>
+              <p style="margin:0;">
+                <a href="mailto:israelitesshopping171@gmail.com" style="color:#1976d2;text-decoration:none;font-weight:600;">israelitesshopping171@gmail.com</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background:#263238;color:white;padding:30px;text-align:center;">
+            <h3 style="margin:0 0 10px 0;font-size:20px;font-weight:300;">SriAstroVeda</h3>
+            <p style="margin:0;font-size:13px;opacity:0.8;">Reference: ${requestId}</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Send emails
+    const adminMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: adminEmail,
+      subject: adminSubject,
+      html: adminEmailHTML,
+      replyTo: email
+    };
+
+    const customerMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      cc: adminEmail,
+      subject: customerSubject,
+      html: customerEmailHTML
+    };
+
+    await Promise.all([
+      transporter.sendMail(adminMailOptions),
+      transporter.sendMail(customerMailOptions)
+    ]);
+
+    // WhatsApp notification (optional)
+    try {
+      let recipient = (phone || "").replace(/[\s\-\+]/g, "");
+      if (recipient && !recipient.startsWith("91")) {
+        recipient = "91" + recipient;
+      }
+
+      const whatsappPayload = {
+        to: recipient,
+        type: "template",
+        template: {
+          id: "YOUR_FORM_SUBMISSION_TEMPLATE_ID",
+          body_text_variables: `${name}|${requestId}|${timeDisplay}`
+        }
+      };
+
+      await axios.post(
+        `https://api.whatstool.business/developers/v2/messages/${process.env.WHATSAPP_API_NO}`,
+        whatsappPayload,
+        {
+          headers: {
+            "x-api-key": process.env.WHATSAPP_API_KEY,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    } catch (whatsappError) {
+      console.error("WhatsApp notification failed:", whatsappError.message);
+      // Don't fail the request if WhatsApp fails
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Form submitted successfully! Check your email for confirmation.",
+      requestId: requestId,
+      emailsSent: { adminEmail, customerEmail: email },
+      birthTimeFormatted: timeDisplay
+    });
+
+  } catch (error) {
+    console.error("Error processing form submission:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to process form submission",
+      error: error.message
+    });
+  }
+});
+
 app.post("/pending-payment-email", async (req, res) => {
   try {
-    console.log('Pending payment email request received:', JSON.stringify(req.body, null, 2));
-    
     const { 
       name, 
       email, 
@@ -888,8 +1081,6 @@ app.post("/pending-payment-email", async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     
-    console.log(`Critical processing failure notification sent for order ${paymentDetails?.orderId || 'N/A'}`);
-    
     res.status(200).json({ 
       success: true, 
       message: "Critical processing failure notification sent successfully!",
@@ -996,13 +1187,8 @@ async function sendWhatsappWithFallback({
     bodyVarsArray: [nameVar || "Customer"] // maps to {{1}}
   });
 
-  console.log("[WA] Endpoint:", endpoint);
-  console.log("[WA] To:", to);
-  console.log("[WA] Try SIMPLE payload with templateId:", templateId, "body_vars_count:", 1);
-
   try {
     const resp = await axios.post(endpoint, simplePayload, { headers, timeout: 15000 });
-    console.log("[WA] SIMPLE send success:", resp.data);
     return { attempted: true, mode: "simple", status: "sent", data: resp.data };
   } catch (err) {
     console.error("[WA] SIMPLE send failed:", err?.message, err?.code);
@@ -1019,16 +1205,8 @@ async function sendWhatsappWithFallback({
     bodyVarsArray: [nameVar || "Customer"]
   });
 
-  console.log("[WA] Try COMPONENTS payload:", {
-    id: templateId,
-    ns: namespace,
-    lang: languageCode,
-    name: templateName
-  });
-
   try {
     const resp = await axios.post(endpoint, componentsPayload, { headers, timeout: 15000 });
-    console.log("[WA] COMPONENTS send success:", resp.data);
     return { attempted: true, mode: "components", status: "sent", data: resp.data };
   } catch (err) {
     console.error("[WA] COMPONENTS send failed");
@@ -1052,8 +1230,6 @@ async function sendWhatsappWithFallback({
 
 app.post("/abandoned-payment-email", async (req, res) => {
   try {
-    console.log("Abandoned payment email request received:", JSON.stringify(req.body, null, 2));
-
     const {
       name,
       email,
@@ -1407,7 +1583,6 @@ app.post("/abandoned-payment-email", async (req, res) => {
 
     // Send admin email
     await transporter.sendMail(mailOptions);
-    console.log(`Abandoned payment notification sent for potential customer: ${name}`);
 
     // WhatsApp send using astro_abandoned template with header image + {{1}} body variable
     // const headerMediaUrl = "https://www.sriastroveda.com/logo192.jpg"; // replace if you have a branded header
@@ -1450,8 +1625,6 @@ app.post("/abandoned-payment-email", async (req, res) => {
 // NEW: Abandoned Match Email API
 app.post("/abandoned-match-email", async (req, res) => {
   try {
-    console.log('Abandoned match email request received:', JSON.stringify(req.body, null, 2));
-    
     const { 
       formData,
       abandonmentReason,
@@ -1829,8 +2002,6 @@ app.post("/abandoned-match-email", async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     
-    console.log(`Abandoned match notification sent for: ${partner1Details?.name || 'Unknown'} & ${partner2Details?.name || 'Unknown'}`);
-    
     res.status(200).json({ 
       success: true, 
       message: "Abandoned match notification sent successfully!",
@@ -1853,7 +2024,6 @@ app.post("/abandoned-match-email", async (req, res) => {
 // EXISTING: Match Horoscope Submission API (keeping your existing one)
 app.post("/send-match-horoscope", async (req, res) => {
   try {
-    console.log('Match horoscope request received:', JSON.stringify(req.body, null, 2));
     
     const {
       formData,        // { partner1:{…}, partner2:{…} }
