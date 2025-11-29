@@ -231,7 +231,7 @@ app.post("/send-astro-email", async (req, res) => {
         'gemstone-consultation': 'Gemstone Consultation',
         'love-report': 'Love Report',
         'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-        'kundli': 'Kundli Analysis 200+ Pages',
+        'kundli': 'Kundli Analysis ',
     };
 
     // Compute friendly name or fall back to raw service string
@@ -782,7 +782,7 @@ app.post("/pending-payment-email", async (req, res) => {
       'gemstone-consultation': 'Gemstone Consultation',
       'love-report': 'Love Report',
       'PersonalizedReport2025': 'Personalized Astrology Report for 2025',
-      'kundli': 'Kundli Analysis 200+ Pages',
+      'kundli': 'Kundli Analysis Report',
     };
 
     const serviceName = serviceMap[service] || service || 'Birth Chart Generation';
@@ -1269,7 +1269,7 @@ app.post("/abandoned-payment-email", async (req, res) => {
       "gemstone-consultation": "Gemstone Consultation",
       "love-report": "Love Report",
       "PersonalizedReport2025": "Personalized Astrology Report for 2025",
-      "kundli": "Kundli Analysis 200+ Pages"
+      "kundli": "Kundli Analysis "
     };
 
     const adminEmail = "israelitesshopping171@gmail.com";
