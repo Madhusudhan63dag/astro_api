@@ -31,6 +31,7 @@ try {
 // Middleware
 app.use(cors({
   origin: [
+    'https://antiquely.in/',
     'https://antiquely.in',
     'https://antiquely.in/',
     'https://sriastroveda.com/',
