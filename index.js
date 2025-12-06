@@ -31,6 +31,8 @@ try {
 // Middleware
 app.use(cors({
   origin: [
+    'https://antiquely.in',
+    'https://antiquely.in/',
     'https://sriastroveda.com/',
     'https://sacredrelm.com',
     'https://astro-snowy-five.vercel.app',
