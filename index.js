@@ -40,7 +40,10 @@ app.use(cors({
     'https://sriastroveda.com',
     'https://www.sriastroveda.com',
     'http://localhost:3000/',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3001/',
+
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -105,7 +108,7 @@ const transporter = nodemailer.createTransport({
 app.post("/send-email", async (req, res) => {
   const { to, subject, message, name, email, phone, domain, productName } = req.body;
 
-  const recipientEmail = "israelitesshopping171@gmail.com";
+  const recipientEmail = "sriastroveda@gmail.com";
   const sourceIdentifier = domain || productName || 'SriAstroVeda';
   
   // Format email content
@@ -114,7 +117,7 @@ app.post("/send-email", async (req, res) => {
     : message;
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `${process.env.EMAIL_USER}, ${process.env.EMAIL_SECONDARY}`,
     to: recipientEmail,
     subject: `${subject || 'Contact Form Submission'} - ${sourceIdentifier}`,
     text: emailContent,
@@ -212,7 +215,7 @@ app.post("/send-astro-email", async (req, res) => {
       });
     }
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
 
     const serviceMap = {
         'numerology': 'Numerology Reading',
@@ -397,7 +400,7 @@ app.post("/send-astro-email", async (req, res) => {
                             <table style="width: 100%; border-collapse: collapse;">
                                 <tr>
                                     <td style="padding: 8px 0; color: #37474f; font-weight: 600; width: 120px;">Email Support:</td>
-                                    <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">israelitesshopping171@gmail.com</td>
+                                    <td style="padding: 8px 0; color: #1976d2; font-weight: 600;">sriastroveda@gmail.com</td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 8px 0; color: #37474f; font-weight: 600;">Response Time:</td>
@@ -436,7 +439,7 @@ app.post("/send-astro-email", async (req, res) => {
                     <h3 style="color: #fff; margin: 0 0 15px 0; font-size: 22px; font-weight: 300; letter-spacing: 1px;">SriAstroVeda</h3>
                     <p style="margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; font-weight: 300;">Premium Astrology Services</p>
                     <p style="margin: 0; font-size: 13px; opacity: 0.7;">
-                        Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: <a href="mailto:israelitesshopping171@gmail.com" style="color:#fff;">israelitesshopping171@gmail.com</a>
+                        Order Reference: ${paymentDetails?.orderId || generateRequestId()} | Customer Support: <a href="mailto:sriastroveda@gmail.com" style="color:#fff;">sriastroveda@gmail.com</a>
                     </p>
                 </div>
             </div>
@@ -445,7 +448,7 @@ app.post("/send-astro-email", async (req, res) => {
     `;
     // Mail options
     const adminMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `${process.env.EMAIL_USER}, ${process.env.EMAIL_SECONDARY}`,
       to: adminEmail,
       subject: adminSubject,
       html: adminEmailHTML,
@@ -453,7 +456,7 @@ app.post("/send-astro-email", async (req, res) => {
     };
 
     const customerMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `${process.env.EMAIL_USER}, ${process.env.EMAIL_SECONDARY}`,
       to: email,
       cc: adminEmail,
       subject: customerSubject,
@@ -547,7 +550,7 @@ app.post("/submit-kundli-form", async (req, res) => {
       });
     }
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
     const requestId = `KDL${Date.now().toString().slice(-8)}`;
 
     // Format the time display for emails
@@ -656,7 +659,7 @@ app.post("/submit-kundli-form", async (req, res) => {
             <div style="text-align:center;padding:25px;background:#f5f5f5;border-radius:8px;margin-top:30px;">
               <p style="margin:0 0 10px 0;color:#616161;font-size:14px;">Need assistance?</p>
               <p style="margin:0;">
-                <a href="mailto:israelitesshopping171@gmail.com" style="color:#1976d2;text-decoration:none;font-weight:600;">israelitesshopping171@gmail.com</a>
+                <a href="mailto:sriastroveda@gmail.com" style="color:#1976d2;text-decoration:none;font-weight:600;">sriastroveda@gmail.com</a>
               </p>
             </div>
           </div>
@@ -673,7 +676,7 @@ app.post("/submit-kundli-form", async (req, res) => {
 
     // Send emails
     const adminMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `${process.env.EMAIL_USER}, ${process.env.EMAIL_SECONDARY}`,
       to: adminEmail,
       subject: adminSubject,
       html: adminEmailHTML,
@@ -681,7 +684,7 @@ app.post("/submit-kundli-form", async (req, res) => {
     };
 
     const customerMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `${process.env.EMAIL_USER}, ${process.env.EMAIL_SECONDARY}`,
       to: email,
       cc: adminEmail,
       subject: customerSubject,
@@ -762,7 +765,7 @@ app.post("/pending-payment-email", async (req, res) => {
       });
     }
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
     
     // Service type mapping
     const serviceMap = {
@@ -1275,7 +1278,7 @@ app.post("/abandoned-payment-email", async (req, res) => {
       "kundli": "Kundli Analysis "
     };
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
     const serviceName = serviceMap[service] || service || "General Astrology Consultation";
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
 
@@ -1634,7 +1637,7 @@ app.post("/abandoned-match-email", async (req, res) => {
       sessionData
     } = req.body;
 
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
     
     // Get customer contact info if available
     const customerEmail = formData.customerEmail || 'Not provided';
@@ -2050,7 +2053,7 @@ app.post("/send-match-horoscope", async (req, res) => {
     }
 
     /* ---------- recipients ---------- */
-    const adminEmail = "israelitesshopping171@gmail.com";
+    const adminEmail = "sriastroveda@gmail.com";
 
     // Helper function to generate request ID
     const generateRequestId = () => `SAV${Date.now().toString().slice(-8)}`;
@@ -2407,7 +2410,7 @@ app.post("/send-match-horoscope", async (req, res) => {
                         <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">Need Support?</h3>
                         <p style="color: #666; margin: 0 0 10px 0;">If you have any questions, please contact us:</p>
                         <div style="background: white; padding: 15px; border-radius: 6px; border-left: 4px solid #2196f3;">
-                            <p style="margin: 0 0 5px 0; color: #1976d2; font-weight: bold;">Email: israelitesshopping171@gmail.com</p>
+                            <p style="margin: 0 0 5px 0; color: #1976d2; font-weight: bold;">Email: sriastroveda@gmail.com</p>
                             <p style="margin: 0; color: #666; font-size: 14px;">Phone: +91 93922 77389 | WhatsApp: +91 95739 99254</p>
                         </div>
                     </div>
